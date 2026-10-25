@@ -21,6 +21,7 @@ def check_request(request: object) -> tuple[bool, str]:
     else:
         return (True, "Reading notes.txt is permitted.")
 
+
 def is_valid_request(request: object) -> bool:
     # Check the container, required keys, and value types in that order.
     if isinstance(request, dict):

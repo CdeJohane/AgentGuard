@@ -2,7 +2,7 @@
 
 import unittest
 
-from guard import check_request, is_allowed, is_valid_request
+from agent_guard.guard import check_request, is_allowed, is_valid_request
 
 
 class PermissionTests(unittest.TestCase):

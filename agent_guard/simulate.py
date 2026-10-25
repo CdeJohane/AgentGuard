@@ -1,6 +1,6 @@
 """Propose file operations and show the guard's decisions. No files are opened."""
 
-from guard import check_request
+from .guard import check_request
 
 
 def main() -> None:

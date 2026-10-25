@@ -1,6 +1,6 @@
 """A guarded execution exercise. No real files are accessed."""
 
-from guard import check_request
+from .guard import check_request
 
 
 def simulated_read(path: str) -> str:

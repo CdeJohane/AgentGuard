@@ -53,9 +53,22 @@ Pair-programming support:
   displayed one ALLOW and ten DENY decisions with reasons and no errors.
 - A simulated reader and four execution tests were supplied with help; I wrote
   the execution function. All eighteen tests then passed, with none skipped.
+- The project was reorganized with help: application modules in agent_guard/,
+  tests in tests/, and this learning log in docs/. Imports and mock targets were
+  updated for the package layout without changing permission or execution rules.
+- After the move, all eighteen tests still passed and the simulation produced
+  the same decisions and reasons using the new module command.
+
+Packaging concepts to review:
+- __init__.py marks the application and test directories as Python packages.
+- A relative import such as 'from .guard import check_request' refers to a module
+  in the same package. Tests use imports such as 'from agent_guard.guard import ...'.
+- Run the simulation from the project root with 'python -m agent_guard.simulate'.
+- Mocks now target 'agent_guard.executor.simulated_read', where the executor
+  looks up its reader. The full test command remains 'python -m unittest -v'.
 
 Next step:
-- Review and commit this completed execution checkpoint, then agree the next
+- Review and commit the package reorganization, then agree the next
   feature before implementing it.
 
 Current scope:

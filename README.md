@@ -1,13 +1,38 @@
-# Agent guard: first exercise
+# Agent guard
 
 A simulation of an agent proposing file operations and a guard checking them.
 There is no AI model or real file access in this exercise. Python's standard
 library is sufficient; no packages need installing.
 
+## Project layout
+
+```text
+agent-guard/
+├── agent_guard/
+│   ├── __init__.py
+│   ├── guard.py
+│   ├── executor.py
+│   └── simulate.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_guard.py
+│   └── test_executor.py
+├── docs/
+│   └── learning_log.txt
+├── README.md
+└── .gitignore
+```
+
+Application code lives in the `agent_guard` package, tests in `tests`, and learning
+notes in `docs`. Run the commands below from the project root. `__init__.py` marks
+the application and test directories as packages. Inside the application package,
+`from .guard import check_request` imports from the sibling `guard` module; tests
+use the full path, such as `from agent_guard.guard import check_request`.
+
 ## Run
 
 ```powershell
-python simulate.py
+python -m agent_guard.simulate
 ```
 
 The original simulation produced the decisions below after the permission rule
@@ -44,7 +69,7 @@ You can also add requests to the list in `simulate.py` to explore your rule.
 
 ## Second exercise (completed): input validation
 
-The validation helper in `guard.py` has this signature:
+The validation helper in `agent_guard/guard.py` has this signature:
 
 ```python
 def is_valid_request(request: object) -> bool:
@@ -73,9 +98,9 @@ Run the tests with Python's built-in unittest module; no installation is needed:
 python -m unittest -v
 ```
 
-`test_guard.py` contains five permission tests, three validation tests, and six
+`tests/test_guard.py` contains five permission tests, three validation tests, and six
 decision-reason tests. All fourteen should run and pass, with none skipped.
-`test_executor.py` adds four execution tests. All eighteen tests should now pass,
+`tests/test_executor.py` adds four execution tests. All eighteen tests should now pass,
 with none skipped. A skipped test means
 the check has not run; it does not mean the behaviour has passed a test.
 
@@ -95,12 +120,12 @@ while still checking the other inputs. An unexpected exception fails a test too.
 
 ## Learning log
 
-`learning_log.txt` records dated progress and learning points for future reference
+`docs/learning_log.txt` records dated progress and learning points for future reference
 or LinkedIn posts. Add a new entry as you complete each exercise.
 
 ## Third exercise (completed): decision reasons
 
-`check_request()` in `guard.py` returns a tuple containing a boolean decision and
+`check_request()` in `agent_guard/guard.py` returns a tuple containing a boolean decision and
 a string reason. It checks these outcomes in order:
 
 | Condition | Allowed | Reason |
@@ -123,7 +148,7 @@ and the priority of structure checks over actions and action checks over paths.
 
 ## Fourth exercise (completed): guarded simulated execution
 
-`executor.py` adds a simulated reader and your execution function:
+`agent_guard/executor.py` adds a simulated reader and your execution function:
 
 ```python
 def execute_request(request: object) -> tuple[bool, str]:
@@ -146,11 +171,11 @@ None              -> (False, "Malformed request.")
 Run just the execution tests:
 
 ```powershell
-python -m unittest test_executor -v
+python -m unittest tests.test_executor -v
 ```
 
 The four execution tests pass. The full suite has eighteen passing tests. The
-fourteen guard tests can also be run with `python -m unittest test_guard -v`.
+fourteen guard tests can also be run with `python -m unittest tests.test_guard -v`.
 
 The new tests use `unittest.mock.patch` to temporarily replace the reader with
 a mock that records calls. `assert_not_called()` checks denied requests never
@@ -158,6 +183,9 @@ reach it. `assert_called_once_with("notes.txt")` checks an allowed request reach
 it exactly once with the correct path. The success test also checks that the
 executor returns the reader's actual result.
 
-The original `simulate.py` still demonstrates permission decisions only. The
+Mocks use the full target `agent_guard.executor.simulated_read`, matching where
+the executor looks up the reader in the new package layout.
+
+`agent_guard/simulate.py` still demonstrates permission decisions only. The
 reader and executor are ordinary Python functions, not an operating-system
 sandbox; the exercise demonstrates enforcing a guard at an execution entry point.
