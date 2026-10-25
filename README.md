@@ -74,7 +74,9 @@ python -m unittest -v
 ```
 
 `test_guard.py` contains five permission tests, three validation tests, and six
-decision-reason tests. All fourteen should run and pass, with none skipped. A skipped test means
+decision-reason tests. All fourteen should run and pass, with none skipped.
+`test_executor.py` adds four execution tests. All eighteen tests should now pass,
+with none skipped. A skipped test means
 the check has not run; it does not mean the behaviour has passed a test.
 
 The `ValidationTests` class contains your completed checks. `assertTrue` checks
@@ -118,3 +120,44 @@ check the whole tuple in an `if`: even `(False, "Denied")` is truthy.
 `is_allowed()` unpacks the result of `check_request()` and returns only the
 boolean, so the permission rules live in one place. Tests cover the four outcomes
 and the priority of structure checks over actions and action checks over paths.
+
+## Fourth exercise (completed): guarded simulated execution
+
+`executor.py` adds a simulated reader and your execution function:
+
+```python
+def execute_request(request: object) -> tuple[bool, str]:
+```
+
+`execute_request()` calls `check_request()` and unpacks its decision and reason.
+Only allowed requests call `simulated_read()` with the requested path. The
+function returns `(True, contents)` on success or `(False, reason)` on denial.
+Request keys are accessed only after the guard has accepted the request.
+
+Examples:
+
+```text
+read notes.txt    -> (True, "Simulated contents of notes.txt")
+write notes.txt   -> (False, "Action is not permitted.")
+read secrets.txt  -> (False, "File is not permitted.")
+None              -> (False, "Malformed request.")
+```
+
+Run just the execution tests:
+
+```powershell
+python -m unittest test_executor -v
+```
+
+The four execution tests pass. The full suite has eighteen passing tests. The
+fourteen guard tests can also be run with `python -m unittest test_guard -v`.
+
+The new tests use `unittest.mock.patch` to temporarily replace the reader with
+a mock that records calls. `assert_not_called()` checks denied requests never
+reach it. `assert_called_once_with("notes.txt")` checks an allowed request reaches
+it exactly once with the correct path. The success test also checks that the
+executor returns the reader's actual result.
+
+The original `simulate.py` still demonstrates permission decisions only. The
+reader and executor are ordinary Python functions, not an operating-system
+sandbox; the exercise demonstrates enforcing a guard at an execution entry point.
