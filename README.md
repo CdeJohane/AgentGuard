@@ -1,191 +1,157 @@
 # Agent guard
 
-A simulation of an agent proposing file operations and a guard checking them.
-There is no AI model or real file access in this exercise. Python's standard
-library is sufficient; no packages need installing.
+A Python learning project that checks an agent's proposed file operation before
+letting it run, explains its decision, and records it in an audit trail.
 
-## Project layout
+The demo uses simulated requests and pretend file contents. You can explore the
+permission flow without an AI account, API key, or real file access.
 
-```text
-agent-guard/
-├── agent_guard/
-│   ├── __init__.py
-│   ├── guard.py
-│   ├── executor.py
-│   └── simulate.py
-├── tests/
-│   ├── __init__.py
-│   ├── test_guard.py
-│   └── test_executor.py
-├── docs/
-│   └── learning_log.txt
-├── README.md
-└── .gitignore
-```
+## Quick start
 
-Application code lives in the `agent_guard` package, tests in `tests`, and learning
-notes in `docs`. Run the commands below from the project root. `__init__.py` marks
-the application and test directories as packages. Inside the application package,
-`from .guard import check_request` imports from the sibling `guard` module; tests
-use the full path, such as `from agent_guard.guard import check_request`.
+Clone or download this repository, then open a terminal in its root directory
+(the folder containing this README).
 
-## Run
+Python is required. Development and verification used **Python 3.14.3**; other
+versions have not been verified. Everything uses the Python standard library,
+so there are no dependencies to install and no environment variables to set.
+A virtual environment is optional.
+
+Run the demo:
 
 ```powershell
 python -m agent_guard.simulate
 ```
 
-The original simulation produced the decisions below after the permission rule
-and input validation were implemented. The current simulation also displays a
-reason; see the completed decision-reasons exercise below.
-
-```text
-Simulated requests only; no files will be accessed.
-
-ALLOW: {'action': 'read', 'path': 'notes.txt'}
-DENY: {'action': 'write', 'path': 'notes.txt'}
-DENY: {'action': 'read', 'path': 'secrets.txt'}
-DENY: {'action': 'delete', 'path': 'notes.txt'}
-DENY: {}
-DENY: {'action': 'read'}
-DENY: {'path': 'notes.txt'}
-DENY: {'action': 123, 'path': 'notes.txt'}
-DENY: {'action': 'read', 'path': None}
-DENY: None
-DENY: []
-```
-
-## First exercise (completed): permissions
-
-The initial exercise was to initialize Git and implement a permission check:
-
-- Return `True` only for reading `notes.txt`.
-- Return `False` for every other action/path pair, including unknown actions.
-- Treat paths as exact strings for this exercise.
-
-`request["action"]` and `request["path"]` give you the two values to check.
-Run the simulation again and compare its decisions with the output above.
-You can also add requests to the list in `simulate.py` to explore your rule.
-
-## Second exercise (completed): input validation
-
-The validation helper in `agent_guard/guard.py` has this signature:
-
-```python
-def is_valid_request(request: object) -> bool:
-```
-
-It should return `True` only when the request is a dictionary containing both
-`action` and `path`, with string values for both. Additional keys are allowed.
-It checks structure; a well-formed request to write a file is still valid input,
-even though the permission rule denies it.
-
-`check_request()` calls this helper before checking permissions. Invalid requests
-are denied. Its request annotation is `object`, since it deliberately accepts
-arbitrary input for checking. `is_allowed()` now delegates to `check_request()`.
-
-The simulator reports `KeyError` and `TypeError` as `ERROR` so it can show all
-samples even before validation is complete. These errors should disappear once
-your guard handles malformed requests; the guard itself should return `False`.
-
-Safely resolving real filesystem paths is a later feature.
-
-## Automated tests
-
-Run the tests with Python's built-in unittest module; no installation is needed:
+Run the tests:
 
 ```powershell
 python -m unittest -v
 ```
 
-`tests/test_guard.py` contains five permission tests, three validation tests, and six
-decision-reason tests. All fourteen should run and pass, with none skipped.
-`tests/test_executor.py` adds four execution tests. All eighteen tests should now pass,
-with none skipped. A skipped test means
-the check has not run; it does not mean the behaviour has passed a test.
+Run both commands from the repository root. `-m` runs a module within its package,
+so imports between the application modules resolve correctly.
 
-The `ValidationTests` class contains your completed checks. `assertTrue` checks
-that a result is true; `assertFalse` checks that it is false. Each test arranges
-a request, calls a function, and checks its result.
+## What the demo shows
 
-The permission tests use `assertIs` to require actual booleans. The reason tests
-use `assertEqual` to check the full decision tuple, including its message.
+The guard uses default deny: only reading `notes.txt` is permitted.
+`notes.txt` and `secrets.txt` are example names; neither file needs to exist.
 
-Check that a valid read request passes validation, a well-formed write request
-also passes validation, and a request missing its path fails validation. Remember
-that validation checks structure, while permissions decide what is allowed.
+| Proposed request | Result |
+| --- | --- |
+| Read `notes.txt` | Execute the simulated reader and return its contents |
+| Write `notes.txt` | Deny the action |
+| Read `secrets.txt` | Deny the file |
+| `None` | Deny the malformed request |
 
-The malformed-input permission test uses `subTest` to report which input failed
-while still checking the other inputs. An unexpected exception fails a test too.
-
-## Learning log
-
-`docs/learning_log.txt` records dated progress and learning points for future reference
-or LinkedIn posts. Add a new entry as you complete each exercise.
-
-## Third exercise (completed): decision reasons
-
-`check_request()` in `agent_guard/guard.py` returns a tuple containing a boolean decision and
-a string reason. It checks these outcomes in order:
-
-| Condition | Allowed | Reason |
-| --- | --- | --- |
-| Invalid request structure | `False` | `Malformed request.` |
-| Action is not `read` | `False` | `Action is not permitted.` |
-| Path is not `notes.txt` | `False` | `File is not permitted.` |
-| Otherwise | `True` | `Reading notes.txt is permitted.` |
-
-Reuse `is_valid_request()` to check structure before accessing dictionary keys.
-The first matching condition determines the reason, so a request with both a
-forbidden action and a forbidden path gets the action reason.
-
-The updated simulation unpacks the tuple into `allowed` and `reason`. Do not
-check the whole tuple in an `if`: even `(False, "Denied")` is truthy.
-
-`is_allowed()` unpacks the result of `check_request()` and returns only the
-boolean, so the permission rules live in one place. Tests cover the four outcomes
-and the priority of structure checks over actions and action checks over paths.
-
-## Fourth exercise (completed): guarded simulated execution
-
-`agent_guard/executor.py` adds a simulated reader and your execution function:
-
-```python
-def execute_request(request: object) -> tuple[bool, str]:
-```
-
-`execute_request()` calls `check_request()` and unpacks its decision and reason.
-Only allowed requests call `simulated_read()` with the requested path. The
-function returns `(True, contents)` on success or `(False, reason)` on denial.
-Request keys are accessed only after the guard has accepted the request.
-
-Examples:
+The demo prints:
 
 ```text
-read notes.txt    -> (True, "Simulated contents of notes.txt")
-write notes.txt   -> (False, "Action is not permitted.")
-read secrets.txt  -> (False, "File is not permitted.")
-None              -> (False, "Malformed request.")
+Simulated requests only; no files will be accessed.
+
+EXECUTED: {'action': 'read', 'path': 'notes.txt'}
+  Simulated contents of notes.txt
+DENIED: {'action': 'write', 'path': 'notes.txt'}
+  Action is not permitted.
+DENIED: {'action': 'read', 'path': 'secrets.txt'}
+  File is not permitted.
+DENIED: None
+  Malformed request.
+
+Audit trail:
+  {'action': 'read', 'path': 'notes.txt', 'allowed': True, 'reason': 'Reading notes.txt is permitted.'}
+  {'action': 'write', 'path': 'notes.txt', 'allowed': False, 'reason': 'Action is not permitted.'}
+  {'action': 'read', 'path': 'secrets.txt', 'allowed': False, 'reason': 'File is not permitted.'}
+  {'action': None, 'path': None, 'allowed': False, 'reason': 'Malformed request.'}
 ```
 
-Run just the execution tests:
+## How it works
+
+An agent proposes an action; the guard applies rules written in Python. This
+prototype supplies example requests directly, so the permission and execution
+behaviour can be examined independently of a model.
+
+```mermaid
+flowchart TD
+    A[Proposed request] --> B[execute_request]
+    B --> C[Validate structure and check permissions]
+    C --> D[Record the permission decision]
+    D --> E{Allowed?}
+    E -->|No| F[Return the denial reason]
+    E -->|Yes| G[Run the simulated reader]
+    G --> H[Return simulated contents]
+    F --> I[Display result and audit trail]
+    H --> I
+```
+
+1. **Validate:** the request must be a dictionary containing string `action` and
+   `path` values. A well-formed request can still be forbidden.
+2. **Decide:** check structure first, action second, and path third. The first
+   failed check determines the denial reason. Matching is exact and case sensitive.
+3. **Record:** append one permission record before executing anything. Missing or
+   non-string action/path fields become `None`; valid fields are kept independently.
+   Extra request fields and file contents are omitted from records.
+4. **Execute:** only permitted requests reach the reader. Denied requests return
+   their reason without calling it.
+
+`check_request()` returns `(allowed, reason)`. `execute_request()` returns
+`(True, contents)` on success or `(False, reason)` on denial. `is_allowed()` is a
+boolean-only wrapper around `check_request()`.
+
+## Code map
+
+| File or directory | Responsibility |
+| --- | --- |
+| [agent_guard/guard.py](agent_guard/guard.py) | Request validation, permission decisions, and reasons |
+| [agent_guard/executor.py](agent_guard/executor.py) | Guarded entry point and simulated reader |
+| [agent_guard/audit.py](agent_guard/audit.py) | In-memory permission records |
+| [agent_guard/simulate.py](agent_guard/simulate.py) | Four-request demo and displayed output |
+| [tests/](tests/) | Unit tests and integration tests |
+| [docs/](docs/) | Learning walkthrough, personal log, and flexible finish plan |
+
+Start with the loop in `simulate.py`, follow its call to `execute_request()`, then
+read the guard and audit helpers. Inside the package, `.guard` in an import means
+"the sibling guard module"; tests use full names such as `agent_guard.guard`.
+
+## Tests
+
+The current suite contains **26 tests** covering allowed and forbidden requests,
+malformed input, denial-reason priority, and the boolean wrapper. Mock readers
+verify that permitted requests execute once and denied requests never execute.
+Audit tests check record fields, snapshots, order, and logging before execution.
+Integration tests exercise the demo and verify a fresh log on repeated runs.
+
+Run an individual area when working on it:
 
 ```powershell
+python -m unittest tests.test_guard -v
 python -m unittest tests.test_executor -v
+python -m unittest tests.test_audit -v
+python -m unittest tests.test_simulate -v
 ```
 
-The four execution tests pass. The full suite has eighteen passing tests. The
-fourteen guard tests can also be run with `python -m unittest tests.test_guard -v`.
+## Current scope
 
-The new tests use `unittest.mock.patch` to temporarily replace the reader with
-a mock that records calls. `assert_not_called()` checks denied requests never
-reach it. `assert_called_once_with("notes.txt")` checks an allowed request reaches
-it exactly once with the correct path. The success test also checks that the
-executor returns the reader's actual result.
+This is an educational prototype with one hard-coded permission rule, no AI
+model connection, and no real filesystem operations. Paths are compared as
+strings; real path resolution and filesystem isolation are outside this version.
 
-Mocks use the full target `agent_guard.executor.simulated_read`, matching where
-the executor looks up the reader in the new package layout.
+Checks apply to requests sent through `execute_request()`. These are ordinary
+Python functions, not an operating-system sandbox; code in the same process can
+call the reader directly or modify the shared audit list.
 
-`agent_guard/simulate.py` still demonstrates permission decisions only. The
-reader and executor are ordinary Python functions, not an operating-system
-sandbox; the exercise demonstrates enforcing a guard at an execution entry point.
+Audit records describe **permission**, not completion. Reader exceptions currently
+propagate to the caller. Records live only in memory, are lost when the process
+ends, and are cleared when the demo starts.
+
+## Learning and next steps
+
+This project was built through pair programming, with implementation exercises
+and tests added in small steps. The completed exercises are preserved in the
+[learning walkthrough](docs/walkthrough.md). The dated
+[learning log](docs/learning_log.txt) records progress, challenges, and where help
+was used.
+
+The [flexible finish plan](docs/finish_plan.md) records proposed next steps.
+Configurable permissions and operation-failure handling are proposals, not
+current features. Each feature's expected behaviour will be discussed before
+implementation.

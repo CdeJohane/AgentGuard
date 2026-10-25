@@ -1,6 +1,21 @@
-"""Propose file operations and show the guard's decisions. No files are opened."""
+"""Demonstrate guarded execution and auditing without accessing real files."""
 
-from .guard import check_request
+from .audit import audit_log
+from .executor import execute_request
+
+
+def display_result(request: object, allowed: bool, message: str) -> None:
+    """Display simulated contents on success or the reason for denial."""
+    status = "EXECUTED" if allowed else "DENIED"
+    print(f"{status}: {request!r}")
+    print(f"  {message}")
+
+
+def display_audit_log() -> None:
+    """Display permission records separately from execution output."""
+    print("\nAudit trail:")
+    for record in audit_log:
+        print(f"  {record!r}")
 
 
 def main() -> None:
@@ -8,26 +23,16 @@ def main() -> None:
         {"action": "read", "path": "notes.txt"},
         {"action": "write", "path": "notes.txt"},
         {"action": "read", "path": "secrets.txt"},
-        {"action": "delete", "path": "notes.txt"},
-        {},
-        {"action": "read"},
-        {"path": "notes.txt"},
-        {"action": 123, "path": "notes.txt"},
-        {"action": "read", "path": None},
         None,
-        [],
     ]
 
+    audit_log.clear()
     print("Simulated requests only; no files will be accessed.\n")
     for request in requests:
-        try:
-            allowed, reason = check_request(request)
-        except (KeyError, TypeError) as error:
-            # Show failures and continue so every sample can be inspected.
-            print(f"ERROR ({type(error).__name__}): {request!r}")
-            continue
-        decision = "ALLOW" if allowed else "DENY"
-        print(f"{decision}: {request!r} -- {reason}")
+        decision, msg = execute_request(request)
+        display_result(request, decision, msg)
+
+    display_audit_log()
 
 
 if __name__ == "__main__":

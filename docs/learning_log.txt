@@ -20,6 +20,12 @@ What I did:
 - Implemented execute_request() to call the guard before simulated execution.
   Allowed requests return the simulated contents; denied requests preserve the
   guard's reason and never call the reader. All eighteen tests passed.
+- Implemented record_decision() to append a fresh four-field audit record for
+  every execution attempt. Valid action and path strings are preserved; missing
+  or invalid fields become None. All twenty-four tests passed, with none skipped.
+- Completed the end-to-end demo loop, sending each request through the executor
+  and displaying its result, followed by the audit trail. All twenty-six tests
+  passed. The demo produced one executed read, three denials, and four records.
 
 What I learned or explored:
 - An agent can propose an action, while a separate guard checks permission.
@@ -37,6 +43,15 @@ What I learned or explored:
   calling an operation, so a denial actually prevents execution through that entry.
 - Used mock-based tests to verify the reader is called once for allowed requests
   and never for forbidden or malformed requests.
+- Separated making a permission decision from recording it: the audit function
+  records the supplied allowed boolean and reason without checking permissions
+  again. Initially found decision handling tricky, then completed the function.
+- Used conditional expressions and short-circuit checks to extract audit fields
+  safely. Fresh dictionaries preserve snapshots without copying extra data.
+- Explored shared-state test isolation: setUp() and tearDown() clear the audit log
+  so one test's records do not affect another test.
+- Used integration tests to check the components together: the demo reaches the
+  reader once, logs every attempt without contents, and starts fresh on each run.
 
 Pair-programming support:
 - The simulation and documentation were scaffolded with assistance.
@@ -58,6 +73,19 @@ Pair-programming support:
   updated for the package layout without changing permission or execution rules.
 - After the move, all eighteen tests still passed and the simulation produced
   the same decisions and reasons using the new module command.
+- The audit list, execution integration, and six audit tests were supplied with
+  help; I wrote the recording function. The tests verified logging before the
+  reader runs, keeping contents out of the log, and one record per attempt.
+- Demo formatting and two integration tests were supplied with help; I wrote
+  the loop connecting execution results to the display. All twenty-six tests
+  passed, including the test running the demo twice in the same process.
+- The README was rewritten with help for a first-time repository visitor:
+  quick start, actual demo output, a flow diagram, code map, tests, and scope.
+  Completed exercises were preserved in docs/walkthrough.md and the flexible
+  schedule in docs/finish_plan.md. No application behaviour changed.
+- Documentation verification: the README output matched the demo exactly and
+  all local Markdown links resolved. All twenty-six tests passed with Python's
+  site-packages loading disabled, supporting the standard-library-only setup.
 
 Packaging concepts to review:
 - __init__.py marks the application and test directories as Python packages.
@@ -68,8 +96,31 @@ Packaging concepts to review:
   looks up its reader. The full test command remains 'python -m unittest -v'.
 
 Next step:
-- Review and commit the package reorganization, then agree the next
-  feature before implementing it.
+- Read the new quick start as a first-time visitor and flag anything unclear.
+- Add my own short reflection about what I learned and what surprised me.
+- Review and commit the documentation checkpoint.
+- Discuss the next proposed feature before implementing it, keeping small steps
+  and meaningful pieces for me to write.
+
+Finish plan:
+- Target: Saturday morning, 31 October 2026; LinkedIn post planned for Monday
+  morning, 2 November 2026 (Europe/London).
+- README first pass completed on Sunday 25 October. Monday 26 October: review
+  the visitor experience and refine the documentation based on feedback.
+- Tuesday 27 October: proposed configurable permission policy; discuss behaviour
+  before implementation.
+- Wednesday 28 October: proposed handling of operation failures; discuss behaviour
+  before implementation.
+- Thursday 29 October: review any friend feedback, fresh setup instructions,
+  and concrete gaps.
+- Friday 30 October: feature freeze, final code and documentation review,
+  release checks, and LinkedIn draft.
+- Saturday morning 31 October: final demo, tests, and release checkpoint.
+- At the end of each session: review the changes, update documentation and this
+  log, and run appropriate checks. Daily checkpoints support the final review.
+- Adjust the plan to progress and availability; feature topics are proposals
+  and will be discussed before code is added.
+- Keep this prototype focused on simulated file operations.
 
 Current scope:
 - This is a learning prototype using simulated requests and exact string paths.
@@ -77,10 +128,11 @@ Current scope:
 
 Possible LinkedIn wording:
 Started a Python project exploring how to guard AI agent actions. Implemented
-default-deny permissions, input validation, explanations for each decision,
-and a guarded simulated executor. Wrote validation tests and extended the project
-through pair programming. All eighteen automated tests pass, including checks
-that denied requests never invoke the simulated reader in this learning prototype.
+default-deny permissions, input validation, decision explanations, a guarded
+simulated executor, and an in-memory audit trail. Wrote validation tests and
+extended the project through pair programming. All twenty-six tests pass,
+including checks that denied requests never reach the reader and each execution
+attempt records one permission decision without logging file contents.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

@@ -3,10 +3,17 @@
 import unittest
 from unittest.mock import patch
 
+from agent_guard.audit import audit_log
 from agent_guard.executor import execute_request
 
 
 class ExecutionTests(unittest.TestCase):
+    def setUp(self):
+        audit_log.clear()
+
+    def tearDown(self):
+        audit_log.clear()
+
     def test_allowed_request_calls_reader_once_and_returns_its_contents(self):
         request = {"action": "read", "path": "notes.txt"}
         with patch("agent_guard.executor.simulated_read", return_value="Contents from reader") as reader:
