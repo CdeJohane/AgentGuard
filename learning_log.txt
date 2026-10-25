@@ -1,0 +1,70 @@
+AGENT GUARD - LEARNING LOG
+
+25 October 2026
+
+Project: Learning to build a Python security guard for AI agent actions.
+
+What I did:
+- Initialized a Git repository for the project.
+- Implemented a permission rule allowing only reading notes.txt.
+- Implemented input validation for dictionary structure, required keys, and
+  string values before checking permissions.
+- Ran simulated requests covering allowed actions, forbidden actions, and
+  malformed input. The simulation produced one ALLOW and ten DENY decisions
+  without errors.
+- Wrote three validation tests: a valid read request, a well-formed but forbidden
+  write request, and a request missing its path. At that stage, all eight
+  automated tests passed, with none skipped.
+- Implemented check_request() to return a boolean decision and a string reason
+  for allowed requests, malformed requests, forbidden actions, and forbidden files.
+
+What I learned or explored:
+- An agent can propose an action, while a separate guard checks permission.
+- Default deny: an action is refused unless explicitly allowed.
+- Fail closed: invalid input should be denied without crashing the guard.
+- Valid input and permitted actions are different: a write request can be
+  well formed and still forbidden.
+- Python's 'and' short-circuits, so validation can protect later key lookups.
+- Type annotations document expected inputs but do not enforce them at runtime.
+- Used unittest assertions to check expected results automatically, including
+  testing validation separately from permission decisions.
+- Explored tuple unpacking and why a nonempty tuple containing False is truthy.
+- Used ordered checks to choose a consistent reason when several rules fail.
+
+Pair-programming support:
+- The simulation and documentation were scaffolded with assistance.
+- Automated permission tests and a validation-test exercise were added using
+  Python's built-in unittest module.
+- The initial test run passed all five permission tests. I then completed the
+  three validation tests myself and removed their skip lines.
+- The request annotation and leftover scaffold comments were tidied with help.
+- is_allowed() was connected to my check_request() implementation with help,
+  so the permission rules now live in one place. Message wording was standardized
+  and an unreachable placeholder return was removed.
+- Six reason tests were added with help, covering all outcomes and check priority.
+  All fourteen automated tests passed, with none skipped, and the simulation
+  displayed one ALLOW and ten DENY decisions with reasons and no errors.
+
+Next step:
+- Review this checkpoint and agree the next feature before implementing it.
+
+Current scope:
+- This is a learning prototype using simulated requests and exact string paths.
+  It does not access real files or connect to an AI model.
+
+Possible LinkedIn wording:
+Started a Python project exploring how to guard AI agent actions. Implemented
+default-deny permissions, input validation, and explanations for each decision.
+Wrote validation tests and extended the project through pair programming.
+All fourteen automated tests pass, covering allowed, forbidden, and malformed
+inputs as well as which denial reason takes priority in this learning prototype.
+
+--------------------------------------------------------------------------
+TEMPLATE FOR FUTURE ENTRIES
+
+Date:
+What I built or changed:
+What I learned:
+How I checked it:
+What I implemented myself / where I had help:
+Next step:
