@@ -215,6 +215,8 @@ permission decision. The learner wrote the parser-to-executor connection.
 The learner also verified `Read secrets.txt`: the model preserved the forbidden
 path, the guard returned `File is not permitted.`, and one denied audit record
 was displayed without running the simulated reader.
+The live `Write notes.txt` check also succeeded: the model preserved `write`,
+the guard returned `Action is not permitted.`, and one denied audit record appeared.
 The adapter handles the observed missing content-type header and empty terminal
 output list by validating and retaining finalized stream events until successful
 completion. Details and diagnostic history are in the connection notes.
@@ -256,8 +258,9 @@ The optional real model connection has completed its first live run through the
 existing guard, while file operations remain simulated. The selected route is
 supported Sign in with ChatGPT plan usage. Model discovery and streaming handling
 have offline tests; the learner's completed pipeline connects proposals to the
-guard. Live allowed-path and forbidden-path checks have succeeded. The current
-checkpoint is to commit and push the passing connection fixes and documentation.
+guard. Live allowed-path, forbidden-path, and forbidden-action checks have
+succeeded. The connection fixes are committed and pushed; the latest documentation
+records the final live action-denial check.
 The current demo remains offline. Details and
 the first parsing exercise are in the [connection notes](docs/model_connection.md).
 Configurable permissions are deferred. Each feature's expected behaviour will

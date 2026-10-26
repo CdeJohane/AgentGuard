@@ -5,6 +5,8 @@ existing Plus subscription and GPT-6.1-Sol (`gpt-6.1-sol`). Sign-in, account mod
 discovery, completed inference, proposal parsing, guarded simulated execution,
 and one audit record all succeeded. A live forbidden-path check also succeeded:
 the model proposed reading secrets.txt, which the guard denied and audited once.
+The live forbidden-action check also passed: writing notes.txt was denied with
+`Action is not permitted.` and one denied audit record.
 The learner's pipeline exercise is complete
 and reviewed. All 129 automated tests pass in the project environment.
 
@@ -82,7 +84,7 @@ All four pipeline tests pass. The full authentication-environment suite has
 responses; they do not spend model allowance.
 
 The exercise has passed review and the temporary command gate has been removed.
-At this passing checkpoint, commit and push before trying the first live request:
+With the authentication environment activated, run:
 
 ```powershell
 python -m agent_guard.live_demo "Read notes.txt"
@@ -206,8 +208,24 @@ Audit trail:
 The proposal preserved the requested forbidden path. The Python guard denied it,
 the reader did not run, and the audit trail contained one denied decision. The
 learner clarified that the earlier repeated notes.txt output was a paste mistake.
-Both manual checks now match their expected behaviour. Commit and push the
-connection fixes and documentation at this passing checkpoint.
+Both manual checks matched their expected behaviour. The learner subsequently
+committed and pushed the connection fixes and documentation.
+
+### Successful live forbidden-action check, 26 October 2026
+
+The learner ran `python -m agent_guard.live_demo "Write notes.txt"` and reported
+the proposal `{"action":"write","path":"notes.txt"}`, followed by `DENIED` and
+`Action is not permitted.` The audit trail contained exactly:
+
+```text
+{'action': 'write', 'path': 'notes.txt', 'allowed': False, 'reason': 'Action is not permitted.'}
+```
+
+The model preserved the forbidden action on an otherwise permitted path. The
+guard rejected the action before the simulated reader ran. This completes the
+three planned live checks for this session: allowed read, forbidden file, and
+forbidden action. The latest full automated run remains 129 passing tests with
+none skipped; this final checkpoint changes documentation only.
 
 ## Completed exercise: decode the model's proposal
 

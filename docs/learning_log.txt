@@ -313,6 +313,20 @@ Next hands-on step:
   only documentation was updated after these manual checks.
 - Commit/push is still pending. Include both recorded live results with the
   streaming fixes; suggested message: Fix streaming response handling for ChatGPT plan demo.
+- Committed and pushed the connection fixes and the recorded allowed-read and
+  forbidden-file results myself.
+- Completed the final check before lectures: Write notes.txt produced
+  {"action":"write","path":"notes.txt"}; the guard returned DENIED with
+  'Action is not permitted.' and exactly one audit record with allowed=False.
+  The simulated reader did not run.
+- Learned to check action permission separately from file permission: notes.txt
+  is readable under the policy, but writing it is forbidden.
+- All three planned live cases now behave as expected: permitted read, forbidden
+  file, and forbidden action. The latest full offline run remains 129 passing
+  tests with none skipped. The assistant updated documentation only after this
+  last manual check; no application code or tests changed.
+- Session complete before lecture preparation. Final housekeeping: commit/push
+  the updated notes with message: Document successful live guard checks.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

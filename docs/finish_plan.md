@@ -35,7 +35,10 @@ fixes resolved the observed missing header and empty terminal output list.
 The learner's pipeline exercise is complete and reviewed, and all 129 tests pass
 in the authentication environment. The learner also verified a live secrets.txt
 proposal: the model preserved the path, the guard denied it, and one denied audit
-record appeared. Commit and push this milestone with both manual results recorded.
+record appeared. The learner committed and pushed this connection milestone, then
+verified a live write proposal on notes.txt: the guard denied the action and
+recorded it once. All three planned live checks for this session now match their
+expected behaviour. Only the final documentation update remains to commit.
 The JSON decoding exercise is complete; see the
 [model connection notes](model_connection.md).
 Configurable permissions are deferred to keep the Saturday target manageable.
