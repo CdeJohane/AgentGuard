@@ -107,7 +107,9 @@ boolean-only wrapper around `check_request()`.
 | [agent_guard/audit.py](agent_guard/audit.py) | In-memory permission records |
 | [agent_guard/simulate.py](agent_guard/simulate.py) | Four-request demo and displayed output |
 | [agent_guard/model_requests.py](agent_guard/model_requests.py) | Decode model proposals as JSON before guard checks |
-| [agent_guard/oauth.py](agent_guard/oauth.py) | In-progress sign-in preparation and callback-state exercise |
+| [agent_guard/oauth.py](agent_guard/oauth.py) | Sign-in URL preparation, PKCE, and callback-state checks |
+| [agent_guard/oauth_callback.py](agent_guard/oauth_callback.py) | One-use loopback callback listener |
+| [agent_guard/local_state.py](agent_guard/local_state.py) | Create, validate, and reuse the non-secret installation host ID |
 | [tests/](tests/) | Unit tests and integration tests |
 | [docs/](docs/) | Learning walkthrough, personal log, and flexible finish plan |
 
@@ -117,7 +119,7 @@ read the guard and audit helpers. Inside the package, `.guard` in an import mean
 
 ## Tests
 
-All **41 tests pass**, covering allowed and forbidden requests,
+The tests cover allowed and forbidden requests,
 malformed input, denial-reason priority, and the boolean wrapper. Mock readers
 verify that permitted requests execute once and denied requests never execute.
 Audit tests check record fields, snapshots, order, and logging before execution.
@@ -129,8 +131,14 @@ do not call a model or authenticate an account. See the
 [model connection notes](docs/model_connection.md).
 
 Nine OAuth tests cover sign-in URL preparation, fresh temporary values, PKCE,
-and callback-state validation. All forty-one tests pass with none skipped.
-The sign-in helpers do not launch a browser or make network requests yet.
+and callback-state validation. Ten callback-listener tests send fake responses
+over local loopback HTTP, checking validation, cancellation, one-time use,
+deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
+
+All **55 tests pass**, with none skipped. Host-ID tests verify creation, reuse,
+and rejection of invalid saved data without overwriting it. Filesystem fixtures
+live temporarily under the ignored
+`.agent_guard/test-tmp/` directory and are removed after each test.
 
 Run an individual area when working on it:
 
@@ -141,6 +149,8 @@ python -m unittest tests.test_audit -v
 python -m unittest tests.test_simulate -v
 python -m unittest tests.test_model_requests -v
 python -m unittest tests.test_oauth -v
+python -m unittest tests.test_oauth_callback -v
+python -m unittest tests.test_local_state -v
 ```
 
 ## Current scope

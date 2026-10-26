@@ -175,11 +175,33 @@ Model access discussion:
 - Added ignore rules with help for .env, .env.*, and .agent_guard/, allowing a
   non-secret .env.example template. The local state directory is reserved; no
   credentials or host metadata have been written there.
+- The local callback listener was implemented with help. Ten tests passed using
+  fake callbacks, covering loopback-only binding, state validation, cancellation,
+  one-time use, deadline enforcement, and keeping codes out of terminal logs.
+  The deadline also covers slow clients sending incomplete HTTP headers.
+- Host-ID storage was scaffolded as my next exercise. Four tests intentionally
+  error at its stub; fifty-one other tests pass. No real browser sign-in,
+  authorization-code exchange, or model request has run.
+- Windows temporary-folder permissions initially blocked filesystem fixtures.
+  Tests now use disposable directories under ignored .agent_guard/test-tmp/,
+  verifying resolved paths stay inside the workspace before recursive cleanup.
+- Found host-ID persistence difficult, particularly file modes and return values.
+  Worked through the distinction between checking a Path's type and checking
+  whether it exists, and between reading an existing file with 'r' and creating
+  a new file with 'x'. Success returns the host-ID string; invalid data raises
+  ValueError instead of returning a boolean or the string 'False'.
+- The creation branch and existing-file reading were scaffolded with help.
+  At that point, fifty-two tests passed, with three intentional errors at the
+  remaining validation stub.
+- Completed the structure and UUID validation: reject invalid metadata, require
+  version 4 and the canonical URN, then return the saved ID string. All fifty-five
+  tests passed, with none skipped. The indentation and error messages were tidied
+  with help; my validation logic was preserved.
 
 Next hands-on step:
-- Review and commit this completed login-preparation checkpoint when ready.
-- Add host-ID persistence and the callback listener before implementing
-  token exchange and identity validation. Keep file operations simulated.
+- Review and commit the completed host-ID persistence checkpoint when ready.
+- Implement token exchange and identity validation before attempting live
+  sign-in. Keep file operations simulated and tokens out of persisted metadata.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
