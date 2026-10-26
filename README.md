@@ -107,6 +107,9 @@ boolean-only wrapper around `check_request()`.
 | [agent_guard/audit.py](agent_guard/audit.py) | In-memory permission records |
 | [agent_guard/simulate.py](agent_guard/simulate.py) | Four-request demo and displayed output |
 | [agent_guard/model_requests.py](agent_guard/model_requests.py) | Decode model proposals as JSON before guard checks |
+| [agent_guard/agent.py](agent_guard/agent.py) | Connect completed model text to guarded execution |
+| [agent_guard/model_client.py](agent_guard/model_client.py) | Account model discovery and completed streaming responses |
+| [agent_guard/live_demo.py](agent_guard/live_demo.py) | Optional live model proposal and simulated execution demo |
 | [agent_guard/oauth.py](agent_guard/oauth.py) | Sign-in URL preparation, PKCE, and callback-state checks |
 | [agent_guard/oauth_callback.py](agent_guard/oauth_callback.py) | One-use loopback callback listener |
 | [agent_guard/local_state.py](agent_guard/local_state.py) | Create, validate, and reuse the non-secret installation host ID |
@@ -137,8 +140,9 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication virtual environment, **all 88 tests pass**, with none
-skipped. Eight signed-token tests are skipped if the optional
+In the authentication virtual environment, **all 110 tests pass**, with none
+skipped. The completed pipeline tests verify allowed, forbidden, malformed,
+and structurally invalid proposals. Eight signed-token tests are skipped if the optional
 authentication dependency is absent. The signed-token tests use locally generated
 keys and fake responses; they do not contact OpenAI. Host-ID tests verify creation,
 reuse, and rejection of invalid saved data without overwriting it. Filesystem fixtures
@@ -203,6 +207,18 @@ installation and registration metadata use local filesystem storage. Requested
 paths are compared as strings; real path resolution and filesystem isolation
 are outside this version.
 
+The optional model adapter and live command are implemented with fake-response
+tests. The learner's pipeline exercise is complete and reviewed. Live inference
+remains unverified. With the authentication environment activated, try:
+
+```powershell
+python -m agent_guard.live_demo "Read notes.txt"
+```
+
+This opens browser sign-in and sends the instruction to a model using ChatGPT
+plan usage. The command waits for a completed proposal, applies the Python guard,
+and displays the result and audit trail. See the [connection notes](docs/model_connection.md#completed-exercise-connect-completed-text-to-the-guard).
+
 Checks apply to requests sent through `execute_request()`. These are ordinary
 Python functions, not an operating-system sandbox; code in the same process can
 call the reader directly or modify the shared audit list.
@@ -230,8 +246,10 @@ The [flexible finish plan](docs/finish_plan.md) records proposed next steps.
 The next milestone is an optional real model connection that proposes requests
 for the existing guard, while file operations remain simulated. The selected
 route is supported Sign in with ChatGPT plan usage. Authentication code is now
-present, the scope exercise is complete, and the manual sign-in check succeeded;
-the first model request and inference-access check are next.
+present, the scope exercise is complete, and the manual sign-in check succeeded.
+Model discovery and streaming handling have offline tests; the completed pipeline
+connects proposals to the guard. The next step is the first live model request
+and inference-access check.
 The current demo remains offline. Details and
 the first parsing exercise are in the [connection notes](docs/model_connection.md).
 Configurable permissions are deferred. Each feature's expected behaviour will

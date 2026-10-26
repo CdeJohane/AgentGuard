@@ -4,7 +4,8 @@ Status, 26 October 2026: the learner completed a live Sign in with ChatGPT check
 using an existing Plus subscription. The reported terminal output confirmed
 verified identity and the required plan-usage permission. The command then exited,
 discarding in-memory tokens. No model request or inference eligibility has been
-verified yet.
+verified yet. The optional model adapter has offline tests, the learner's pipeline
+exercise is complete and reviewed, and the live command is enabled.
 
 ## Expected connection behaviour
 
@@ -26,6 +27,64 @@ verified yet.
 
 The existing offline demo and tests stay available. File operations remain
 simulated. Live sign-in and model requests are separate from offline tests.
+
+## Completed exercise: connect completed text to the guard
+
+Expected behaviour, agreed before implementation:
+
+- The model proposes one action/path as JSON from one user instruction. It has
+  no tools or file access. Python decides whether the proposal is permitted.
+- Discovery uses the signed-in account's model catalog, preserving visible model
+  order. The command defaults to the first visible model; `--model` selects a
+  catalog slug. An unavailable choice lists the available choices without inference.
+- Only a successful `response.completed` event supplies text to the pipeline.
+  Failed, incomplete, interrupted, oversized, or malformed service responses stop
+  before parsing or execution. Partial text is never executed.
+- Completed text containing invalid JSON is a different case: the parser returns
+  `None`, and the executor records a malformed-request denial.
+- Only reading `notes.txt` reaches the simulated reader. Forbidden proposals
+  retain their original action/path and receive the usual permission denial.
+- There are no automatic retries or API-key billing fallbacks. Tokens remain in
+  memory for the sign-in and inference process, then are discarded on exit.
+
+The assistant implemented `model_client.py`, the `live_demo.py` command,
+and fake-response tests. The transport pins the public HTTPS endpoints, refuses
+redirects, limits catalog/stream size, uses a 30-second socket timeout, and checks
+a 120-second stream budget between line reads. A blocked read can extend beyond
+that budget until the socket timeout. This is a small demo adapter, not a general
+Responses API client. Reasoning items are ignored; it requires one completed
+assistant text proposal and rejects refusals or tool calls.
+
+You completed `execute_model_response(text)` in `agent_guard/agent.py`:
+
+1. Decode the supplied text using the existing parser.
+2. Pass that decoded value unchanged to the existing executor and return its result.
+
+Your implementation stores the parser's result in `parsed` and returns
+`execute_request(parsed)`. It preserves the original proposal and returns the
+executor's `(bool, str)` tuple, without duplicating permission rules or audit calls.
+With the authentication environment activated:
+
+```powershell
+python -m unittest tests.test_agent -v
+```
+
+All four pipeline tests pass. The full authentication-environment suite has
+110 passing tests, with none skipped. All automated model checks use fake
+responses; they do not spend model allowance.
+
+The exercise has passed review and the temporary command gate has been removed.
+At this passing checkpoint, commit and push before trying the first live request:
+
+```powershell
+python -m agent_guard.live_demo "Read notes.txt"
+```
+
+The command signs in again using saved registration,
+discovers models, requests one proposal, and displays its result and audit trail.
+Status 0 means a proposal was processed (including a guard denial), 1 means a
+connection/inference failure, 2 means model-selection needs attention, and
+130 means keyboard cancellation. Live inference and allowance remain unverified.
 
 ## Completed exercise: decode the model's proposal
 
@@ -177,7 +236,8 @@ python -m venv venv
 .\venv\Scripts\python.exe -m unittest -v
 ```
 
-In that environment, all 88 tests pass, with none skipped. Without the optional
+At the completed authentication checkpoint, all 88 tests passed, with none skipped.
+See the completed pipeline exercise above for the expanded suite's present status. Without the optional
 dependency, eight signed-token tests are explicitly skipped. Fake responses and
 generated keys exercise verification without live sign-in or model usage.
 

@@ -23,6 +23,8 @@ uses simulated file operations; a real model connection is the next milestone.
   `.\venv\Scripts\python.exe -m unittest -v` to include signed-token verification tests.
   Without those dependencies, report the explicitly skipped tests.
 - Focused tests: `python -m unittest tests.test_guard -v` (or another test module).
+- The learner has activated their virtual environment; use `python` in commands
+  shared with them. Tool terminals may need the project interpreter explicitly.
 - Follow the existing package imports and standard-library unittest conventions.
 
 ## Permission and execution behaviour

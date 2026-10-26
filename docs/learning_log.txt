@@ -225,12 +225,29 @@ Model access discussion:
   checkpoint, before introducing the model-request demo exercise.
 
 Next hands-on step:
-- Commit and push the completed authentication checkpoint and its documentation.
-- Agree the first model-request demo: turn an instruction into a single proposed
+- Committed and pushed the completed authentication checkpoint myself.
+- Agreed the first model-request demo: turn an instruction into one proposed
   action, decode it, and send it through the existing guarded executor.
-- Discover a model available to the signed-in account and verify the first real
-  inference request. Keep file operations simulated and tokens in memory.
-  Keep file operations simulated and tokens out of persisted metadata.
+- The assistant added account model discovery, bounded streaming response handling,
+  a disabled live-command scaffold, and eighteen offline connection/controller
+  tests. These tests use fake responses; no live model request was made.
+- Learned why receiving some text is not enough: inference can fail after partial
+  text arrives. Only a completed response may reach the proposal pipeline.
+- My exercise was execute_model_response() in agent_guard/agent.py, connecting
+  the existing parser and executor, keeping permission checks and audit recording
+  in their existing modules.
+- The expanded suite initially had 106 passing tests and four intentional NotImplementedError
+  exercise errors, with none skipped in the authentication virtual environment.
+- Completed the pipeline myself: parsed = parse_model_request(text), followed by
+  return execute_request(parsed). Review confirmed that it preserves the decoded
+  proposal and returns the executor's result, without duplicate permission or
+  audit logic. All 110 tests now pass with none skipped in the project environment.
+- The assistant removed the temporary live-command gate and updated the tests
+  and documentation after review. No live model request has been made yet.
+- Activated my virtual environment in the terminal; shared commands can now use
+  python directly. Assistant tool terminals may use a separate environment.
+- Next: commit/push this passing checkpoint, then run the first live inference
+  demo. File operations stay simulated and tokens stay in memory.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
