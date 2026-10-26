@@ -1,8 +1,10 @@
 # Model connection: selected route and first exercise
 
-Status, 26 October 2026: the learner chose to pursue the supported Sign in with
-ChatGPT route using an existing Plus subscription. The app is not authenticated
-and no model request has been made. Account eligibility is unverified.
+Status, 26 October 2026: the learner completed a live Sign in with ChatGPT check
+using an existing Plus subscription. The reported terminal output confirmed
+verified identity and the required plan-usage permission. The command then exited,
+discarding in-memory tokens. No model request or inference eligibility has been
+verified yet.
 
 ## Expected connection behaviour
 
@@ -12,8 +14,8 @@ and no model request has been made. Account eligibility is unverified.
    nonce, and PKCE protection. Use the issued client ID for the code exchange.
 3. Verify the returned identity and granted plan-usage permission before inference.
    Credentials must stay out of source files, terminal output, and audit records.
-   The first version will keep tokens in memory; a validation library still needs
-   selecting. Persist only non-secret installation and registration metadata.
+   Tokens stay in memory. PyJWT with its cryptography extra verifies signed
+   identity tokens. Persist only installation and registration metadata, never tokens.
 4. Discover available models for the authorized account; do not assume a particular
    model is entitled merely because it appears in a client catalog.
 5. Ask the model to propose exactly one action/path request as JSON. The model
@@ -66,8 +68,9 @@ The listener reuses this helper and enforces attempt expiry and one-time use.
 python -m unittest tests.test_oauth -v
 ```
 
-Four sign-in preparation tests and five callback-state tests pass. Token exchange,
-identity validation, and live account access remain unimplemented or unverified.
+Sign-in preparation and callback-state tests pass. Token exchange and identity
+verification are implemented and tested with fake responses. A manual identity
+and permission check also succeeded, as reported by the learner.
 
 ## Callback listener: implemented with simulated responses
 
@@ -86,14 +89,16 @@ The context closes the listener on exit.
 Default HTTP request logs are disabled, responses do not echo codes, and the
 returned object's repr hides its code. Cancellation and malformed matching
 callbacks raise `CallbackError`; an expired attempt raises `TimeoutError`.
-No browser-opening command or token exchange is wired up yet.
+The browser controller and token exchange are implemented in `sign_in.py` and
+`auth_tokens.py`; the live sign-in check is now available after scope review.
 
 ```powershell
 python -m unittest tests.test_oauth_callback -v
 ```
 
-All ten listener tests pass using fake codes and local HTTP only. They do not
-contact OpenAI or establish account eligibility.
+The listener tests pass using fake codes and local HTTP only, including returning
+registrations whose callback omits the saved client ID. A different returned ID
+is rejected. These tests do not contact OpenAI or establish account eligibility.
 
 ## Completed exercise: persist the installation host ID
 
@@ -119,10 +124,90 @@ parses the UUID and checks its version and canonical URN.
 python -m unittest tests.test_local_state -v
 ```
 
-All four host-ID tests and all fifty-five tests overall pass. Fixtures use
+All four host-ID tests pass. Fixtures use
 temporary subdirectories of ignored `.agent_guard/test-tmp/`, with verified
 workspace paths before cleanup. The application's real host metadata has not
 been created. Host IDs are identifiers, not authentication credentials.
+
+## Implemented authentication components
+
+- `auth_tokens.py` fetches public discovery metadata, checks the expected issuer
+  and endpoints, and exchanges an accepted code with its issued client ID, exact
+  redirect URI, and PKCE verifier. HTTP errors are displayed without raw bodies.
+  Redirects are refused, HTTP reads are bounded, and requests have timeouts.
+- Identity verification requires an RS256 signature from the issuer's JWKS,
+  matching issuer and audience, required claims, valid timestamps, the original
+  nonce, and a nonempty subject. Returning registrations must match the saved
+  subject. Unfamiliar key IDs trigger one refresh before failure.
+- `sign_in.py` prepares the listener before opening the browser, closes it on
+  completion or failure, and returns an in-memory session after verification.
+  It does not call models or run agent tools.
+- `local_state.py` saves the issued client ID before exchange with `subject: null`
+  for an initial pending registration. Successful verification supplies the
+  subject. Existing verified registration data is preserved on failed sign-in.
+  Metadata is written atomically and never contains tokens.
+- Returning authorization URLs reuse the issued client ID and omit the initial
+  agent-name hint. The stable host ID is reused. Tokens are not persisted, so a
+  new process requires browser sign-in again. Multiple-account switching, token
+  refresh, and remote logout are outside this first version.
+
+The public discovery document was checked against the expected issuer, endpoints,
+and RS256 signing algorithm. This does not establish personal account eligibility.
+
+## Completed exercise: check the granted permission scope
+
+Your `has_plan_scope(scope: object) -> bool` implementation in `agent_guard/oauth.py`:
+
+- Non-string input returns `False`.
+- Split a string into individual scope names.
+- Return `True` only when `chatgpt.tokens.use.direct` is a complete scope name.
+  `chatgpt.tokens.use.direct.extra` must return `False`.
+
+A verified identity without this permission remains signed in with
+`plan_usage_enabled=False`; it must not make model requests. The token response
+provides the scope, not the browser callback's untrusted query parameters. The
+flag records granted permission, not a successful inference or remaining quota.
+
+Authentication uses the optional dependency in `requirements-auth.txt`, already
+installed in the project's current `venv`. For a fresh checkout:
+
+```powershell
+python -m venv venv
+.\venv\Scripts\python.exe -m pip install -r requirements-auth.txt
+.\venv\Scripts\python.exe -m unittest -v
+```
+
+In that environment, all 88 tests pass, with none skipped. Without the optional
+dependency, eight signed-token tests are explicitly skipped. Fake responses and
+generated keys exercise verification without live sign-in or model usage.
+
+## Try the live account check
+
+```powershell
+.\venv\Scripts\python.exe -m agent_guard.sign_in
+```
+
+The command opens Continue with ChatGPT in the system browser, waits for the
+local callback, exchanges the code, and verifies identity and granted scope.
+It prints only the result, not tokens, codes, or account identifiers. The tests
+cover success, missing permission, expected failures, redaction of unexpected
+errors, and Ctrl+C cancellation.
+
+The command exits after checking the connection; its tokens are not saved.
+Only installation and registration metadata remains. Status 0 means verified
+identity and plan permission, 2 means verified identity without plan permission,
+1 means failure, and 130 means keyboard cancellation. No model inference is run,
+so a successful check does not prove inference eligibility or remaining quota.
+The learner reported this successful live result on 26 October 2026:
+
+```text
+Account verified. ChatGPT plan usage permission granted.
+No model request was made. This check does not save login tokens.
+```
+
+Identity and granted scope are now manually verified. Model inference access
+and available allowance remain unverified. The next demo must sign in again,
+using the saved client registration, because tokens are not persisted.
 
 ## Local state and secrets
 
@@ -131,7 +216,7 @@ been created. Host IDs are identifiers, not authentication credentials.
 | OAuth state, nonce, and PKCE verifier | Memory for one login attempt; discarded afterward |
 | Access, refresh, and ID tokens | Memory for the running session; fresh sign-in after restart |
 | Host ID | `.agent_guard/host.json` when the helper is called; no tokens |
-| Issued client registration metadata | Planned local JSON under `.agent_guard/`; no tokens |
+| Issued client registration metadata | `.agent_guard/registration.json`: client ID and subject, initially null until verified; no tokens |
 | Optional local configuration | `.env` may be used later; no `.env` file is currently required or generated |
 
 `.gitignore` excludes `.env`, `.env.*`, and `.agent_guard/`. A deliberately
@@ -151,6 +236,8 @@ authorization codes.
 - [Models and inference, including a Python example](https://developers.openai.com/siwc/token-sharing-open-source/models-and-inference)
 - [Accounts, sessions, and credential security](https://developers.openai.com/siwc/token-sharing-open-source/profiles-and-sessions)
 - [Local and open-source project integration overview](https://developers.openai.com/cookbook/articles/sign-in-with-chatgpt)
+- [Identity validation guidance](https://developers.openai.com/siwc/website#6-verify-the-id-token)
+- [PyJWT API reference](https://pyjwt.readthedocs.io/en/stable/api.html)
 
 The sign-in guide covers dynamic client registration and validation. The inference
 guide requires the public Responses API, an authorized OAuth token, streaming,

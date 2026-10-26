@@ -19,6 +19,9 @@ uses simulated file operations; a real model connection is the next milestone.
 - Run commands from the repository root.
 - Offline demo: `python -m agent_guard.simulate`.
 - Full test suite: `python -m unittest -v`.
+- Optional authentication dependencies: `requirements-auth.txt`. Use
+  `.\venv\Scripts\python.exe -m unittest -v` to include signed-token verification tests.
+  Without those dependencies, report the explicitly skipped tests.
 - Focused tests: `python -m unittest tests.test_guard -v` (or another test module).
 - Follow the existing package imports and standard-library unittest conventions.
 
@@ -33,6 +36,9 @@ uses simulated file operations; a real model connection is the next milestone.
 
 ## Session checkpoints
 
+- At each coherent passing checkpoint, remind the learner to commit and push
+  with a suggested message before moving to the next feature. The learner normally
+  handles Git actions unless they explicitly ask otherwise.
 - Check the current files and user changes before editing.
 - Run checks appropriate to the change; report intentional exercise failures separately.
 - Update relevant documentation and the dated learning log for completed work.

@@ -146,6 +146,20 @@ class CallbackListenerTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     CallbackListener(uuid4().urn, timeout_seconds=timeout)
 
+    def test_returning_callback_can_omit_the_saved_client_id(self):
+        with CallbackListener(uuid4().urn, client_id="oaiapp_saved") as listener, ThreadPoolExecutor(max_workers=1) as pool:
+            pending = pool.submit(listener.wait)
+            parameters = {"state": listener.attempt.state, "code": "returning-fake-code"}
+            self.assertEqual(send_callback(listener, parameters)[0], 200)
+            self.assertEqual(pending.result(timeout=2).client_id, "oaiapp_saved")
+
+    def test_returning_callback_cannot_replace_the_saved_client_id(self):
+        with CallbackListener(uuid4().urn, client_id="oaiapp_saved") as listener, ThreadPoolExecutor(max_workers=1) as pool:
+            pending = pool.submit(listener.wait)
+            self.assertEqual(send_callback(listener, self.valid_parameters(listener))[0], 400)
+            with self.assertRaises(CallbackError):
+                pending.result(timeout=2)
+
 
 if __name__ == "__main__":
     unittest.main()

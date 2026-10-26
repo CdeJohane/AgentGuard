@@ -1,6 +1,7 @@
 """Local non-secret installation metadata. Do not store login tokens here."""
 
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -33,3 +34,41 @@ def load_or_create_host_id(path: Path = Path(".agent_guard/host.json")) -> str:
             return data["host_id"]
         else:
             raise ValueError("Saved host ID must be a canonical UUIDv4 URN.")
+
+
+@dataclass(frozen=True)
+class Registration:
+    """Non-token registration metadata; subject is None until identity is verified."""
+
+    client_id: str
+    subject: str | None = field(default=None, repr=False)
+
+
+def load_registration(path: Path) -> Registration | None:
+    if not path.exists():
+        return None
+    with path.open("r", encoding="utf-8") as file:
+        data = json.load(file)
+    if (
+        not isinstance(data, dict) or set(data) != {"client_id", "subject"}
+        or not isinstance(data["client_id"], str) or not data["client_id"].strip()
+        or data["client_id"] == "dynamic_agent_client"
+        or (data["subject"] is not None and (
+            not isinstance(data["subject"], str) or not data["subject"].strip()
+        ))
+    ):
+        raise ValueError("Saved registration metadata is invalid.")
+    return Registration(data["client_id"], data["subject"])
+
+
+def save_registration(path: Path, registration: Registration) -> None:
+    """Atomically write client/account metadata only, with no tokens."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
+    try:
+        with temporary.open("x", encoding="utf-8") as file:
+            json.dump({"client_id": registration.client_id, "subject": registration.subject}, file)
+        temporary.replace(path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()

@@ -197,11 +197,40 @@ Model access discussion:
   version 4 and the canonical URN, then return the saved ID string. All fifty-five
   tests passed, with none skipped. The indentation and error messages were tidied
   with help; my validation logic was preserved.
+- Browser-controller, code-exchange, and identity-verification code were added
+  with help. Optional PyJWT with cryptography was installed in the project's
+  virtual environment; the offline demo still works without that dependency.
+- Tests use locally generated signing keys and fake responses to reject forged
+  signatures, expired identities, wrong audiences, nonce mismatches, invalid
+  response fields, and returning-account mismatches. Registration metadata keeps
+  the issued client ID and verified subject, with no tokens on disk.
+- A pending issued client ID is retained before exchange so an expired code can
+  be retried with that registration. A null subject marks it as unverified.
+- In the authentication virtual environment, seventy-eight tests pass and five
+  initially errored at my has_plan_scope() exercise. I completed the function
+  using string validation, split(), and exact equality for each scope name.
+- All eighty-three tests then passed. Five command-output tests were added with
+  help while enabling the sign-in command, bringing the suite to eighty-eight
+  passing tests with none skipped in the authentication virtual environment.
+- The live command reports identity and permission success, missing permission,
+  failure, or keyboard cancellation without printing credentials. It makes no
+  model request and discards in-memory tokens when it exits. Actual account
+  sign-in and inference eligibility are still awaiting verification.
+- Ran the live sign-in command myself and received: 'Account verified. ChatGPT
+  plan usage permission granted.' The command confirmed that no model request
+  was made and no login tokens were saved. This manually verifies identity and
+  the required scope; it does not yet verify inference access or available usage.
+- Asked for commit/push reminders at completed milestones. This working agreement
+  was added to AGENTS.md. The completed authentication work is the current passing
+  checkpoint, before introducing the model-request demo exercise.
 
 Next hands-on step:
-- Review and commit the completed host-ID persistence checkpoint when ready.
-- Implement token exchange and identity validation before attempting live
-  sign-in. Keep file operations simulated and tokens out of persisted metadata.
+- Commit and push the completed authentication checkpoint and its documentation.
+- Agree the first model-request demo: turn an instruction into a single proposed
+  action, decode it, and send it through the existing guarded executor.
+- Discover a model available to the signed-in account and verify the first real
+  inference request. Keep file operations simulated and tokens in memory.
+  Keep file operations simulated and tokens out of persisted metadata.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

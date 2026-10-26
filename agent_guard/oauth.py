@@ -19,8 +19,8 @@ class LoginAttempt:
     authorization_url: str = field(repr=False)
 
 
-def create_login_attempt(host_id: str, callback_port: int) -> LoginAttempt:
-    """Prepare first-time registration for a caller's persistent UUIDv4 host ID.
+def create_login_attempt(host_id: str, callback_port: int, client_id: str | None = None) -> LoginAttempt:
+    """Prepare new registration or reauthorization for a saved issued client ID.
 
     The future callback listener must already own callback_port before this
     URL is opened. This helper does not persist the host ID or start a listener.
@@ -33,6 +33,11 @@ def create_login_attempt(host_id: str, callback_port: int) -> LoginAttempt:
         raise ValueError("A UUIDv4 host ID in urn:uuid: format is required.")
     if type(callback_port) is not int or not 1 <= callback_port <= 65535:
         raise ValueError("Callback port must be an integer from 1 to 65535.")
+    if client_id is not None and (
+        not isinstance(client_id, str) or not client_id.strip()
+        or client_id == "dynamic_agent_client"
+    ):
+        raise ValueError("A saved issued client ID is required for reauthorization.")
 
     redirect_uri = f"http://127.0.0.1:{callback_port}/auth/callback"
     state = secrets.token_urlsafe(32)
@@ -41,8 +46,7 @@ def create_login_attempt(host_id: str, callback_port: int) -> LoginAttempt:
     digest = hashlib.sha256(code_verifier.encode("ascii")).digest()
     challenge = base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
     parameters = {
-        "client_id": "dynamic_agent_client",
-        "agent_name_hint": "agent-guard",
+        "client_id": client_id or "dynamic_agent_client",
         "ext_agent_host_id": host_id,
         "response_type": "code",
         "redirect_uri": redirect_uri,
@@ -53,6 +57,8 @@ def create_login_attempt(host_id: str, callback_port: int) -> LoginAttempt:
         "code_challenge_method": "S256",
         "code_challenge": challenge,
     }
+    if client_id is None:
+        parameters["agent_name_hint"] = "agent-guard"
     authorization_url = "https://auth.openai.com/api/accounts/authorize?" + urlencode(parameters)
     return LoginAttempt(redirect_uri, state, nonce, code_verifier, authorization_url)
 
@@ -67,3 +73,19 @@ def callback_state_matches(expected: str, received: object) -> bool:
         return False
     else:
         return secrets.compare_digest(expected, received)
+
+
+def has_plan_scope(scope: object) -> bool:
+    """Check the token response's space-separated permission names.
+
+    Non-string input is rejected. A permission must match a complete scope name,
+    not a substring of a longer name.
+    """
+    if not isinstance(scope, str):
+        return False
+    else:
+        str_split = scope.split()
+        for s_name in str_split:
+            if s_name == "chatgpt.tokens.use.direct":
+                return True
+    return False

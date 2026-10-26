@@ -1,0 +1,2 @@
+# Optional dependency for signed OpenID Connect identity-token verification.
+PyJWT[crypto]==2.15.1

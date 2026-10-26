@@ -28,8 +28,9 @@ to fill the remaining days.
 The current demo is offline. The next milestone adds one optional real model
 connection that proposes a request for the existing guarded executor. File
 operations stay simulated. The selected route is supported Sign in with ChatGPT
-plan usage. Authentication is not implemented yet and live account eligibility
-is unverified. The first offline exercise decodes model-proposed JSON; see the
+plan usage. Authentication is implemented, and the learner reported a successful
+live identity and permission check on 26 October. The first model request and
+inference eligibility are still pending. The JSON decoding exercise is complete; see the
 [model connection notes](model_connection.md).
 Configurable permissions are deferred to keep the Saturday target manageable.
 

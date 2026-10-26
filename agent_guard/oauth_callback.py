@@ -83,7 +83,7 @@ class CallbackListener:
     opened in a browser by a future sign-in controller. wait() may be called once.
     """
 
-    def __init__(self, host_id: str, timeout_seconds: float = 180.0):
+    def __init__(self, host_id: str, timeout_seconds: float = 180.0, *, client_id: str | None = None):
         if (
             type(timeout_seconds) not in (int, float)
             or not math.isfinite(timeout_seconds)
@@ -91,6 +91,7 @@ class CallbackListener:
         ):
             raise ValueError("The callback timeout must be a positive finite number.")
         self._host_id = host_id
+        self._client_id = client_id
         self._timeout_seconds = timeout_seconds
         self._server = None
         self._attempt = None
@@ -107,7 +108,7 @@ class CallbackListener:
         self._entered = True
         server = _CallbackServer(("127.0.0.1", 0), _CallbackHandler)
         try:
-            self._attempt = create_login_attempt(self._host_id, server.server_port)
+            self._attempt = create_login_attempt(self._host_id, server.server_port, self._client_id)
         except BaseException:
             server.server_close()
             raise
@@ -183,10 +184,13 @@ class CallbackListener:
             return 400, "Sign-in did not complete. You may close this tab."
         codes = fields.get("code", [])
         clients = fields.get("client_id", [])
+        if self._client_id is not None and "client_id" not in fields:
+            clients = [self._client_id]
         if (
             len(codes) != 1 or not codes[0].strip()
             or len(clients) != 1 or not clients[0].strip()
             or clients[0] == "dynamic_agent_client"
+            or (self._client_id is not None and clients[0] != self._client_id)
         ):
             self._error = CallbackError("The sign-in callback was incomplete or ambiguous.")
             return 400, "Invalid sign-in callback. Start a new attempt."

@@ -5,7 +5,7 @@ from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
-from agent_guard.oauth import callback_state_matches, create_login_attempt
+from agent_guard.oauth import callback_state_matches, create_login_attempt, has_plan_scope
 
 
 class LoginPreparationTests(unittest.TestCase):
@@ -79,6 +79,33 @@ class CallbackStateTests(unittest.TestCase):
 
     def test_unexpected_unicode_state_is_rejected_without_crashing(self):
         self.assertIs(callback_state_matches("expected-state", "\u2603"), False)
+
+
+class ReturningLoginTests(unittest.TestCase):
+    def test_saved_client_is_reused_without_initial_registration_name(self):
+        attempt = create_login_attempt(uuid4().urn, 1455, client_id="oaiapp_saved")
+        query = parse_qs(urlsplit(attempt.authorization_url).query)
+        self.assertEqual(query["client_id"], ["oaiapp_saved"])
+        self.assertNotIn("agent_name_hint", query)
+
+
+class PlanScopeTests(unittest.TestCase):
+    def test_required_scope_grants_plan_usage(self):
+        self.assertIs(has_plan_scope("openid profile chatgpt.tokens.use.direct"), True)
+
+    def test_scope_alone_grants_plan_usage(self):
+        self.assertIs(has_plan_scope("chatgpt.tokens.use.direct"), True)
+
+    def test_other_scopes_do_not_grant_plan_usage(self):
+        self.assertIs(has_plan_scope("openid email resource.invoke"), False)
+
+    def test_a_substring_is_not_a_scope(self):
+        for scope in ("chatgpt.tokens.use.direct.extra", "prefix-chatgpt.tokens.use.direct"):
+            self.assertIs(has_plan_scope(scope), False)
+
+    def test_empty_or_non_string_scopes_are_rejected(self):
+        for scope in (None, "", "   ", [], ["chatgpt.tokens.use.direct"], 42):
+            self.assertIs(has_plan_scope(scope), False)
 
 
 if __name__ == "__main__":
