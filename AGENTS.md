@@ -3,8 +3,8 @@
 ## Project and learning approach
 
 This is a Python learning project for checking an AI agent's proposed actions.
-The learner knows Python and is new to agents. The current demo is offline and
-uses simulated file operations; a real model connection is the next milestone.
+The learner knows Python and is new to agents. The project has an offline demo
+and an optional real model connection; all agent file operations are simulated.
 
 - Work in small steps. Discuss each feature's expected behaviour before implementing it.
 - Explain unfamiliar agent concepts in plain language.

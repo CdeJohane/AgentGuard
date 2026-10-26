@@ -249,6 +249,71 @@ Next hands-on step:
 - Next: commit/push this passing checkpoint, then run the first live inference
   demo. File operations stay simulated and tokens stay in memory.
 
+26 October 2026 - First live inference attempt and diagnostics
+- Ran the live demo myself. Sign-in and model discovery succeeded, selecting
+  GPT-6.1-Sol (gpt-6.1-sol). The demo then stopped with an unexpected content type
+  before the completed-proposal pipeline ran. Successful inference is not verified.
+- The assistant improved the error handling to report HTTP status, recognized
+  content type, body shape, and documented service error codes. Raw service text
+  and credentials stay hidden. This is a diagnostic improvement, not a confirmed
+  fix for the live response.
+- Four offline regression tests were added with help. All 114 tests pass in the
+  project environment, with none skipped. Automated checks made no live requests.
+- Next: rerun the same demo and use the improved error to identify the cause.
+  Finish diagnosis and verify live behaviour before the next commit/push reminder.
+- Reran the demo and reported HTTP 200 with a missing Content-Type header and a
+  non-JSON body. Learned that an event stream is not one JSON document, so this
+  diagnostic does not establish that the response body is invalid.
+- The assistant added a narrow fallback for headerless HTTP 200 inference:
+  validate SSE fields and require a completed response before using any text.
+  HTML, plain text, failed streams, and incomplete streams still stop execution.
+- Four further offline tests pass, bringing the suite to 118 passing tests with
+  none skipped in the project environment. A live rerun is still needed to verify
+  this compatibility fix. The reason for the omitted header is not established.
+- The next live run reached a completed response, then stopped with 'The model
+  must return one nonempty text proposal.' That check combined several possible
+  causes, so the observed text-part count is still unknown.
+- The assistant corrected an overly strict adapter assumption: one proposal can
+  span several text parts or messages. Completed text is now joined in order
+  before my unchanged parser and executor process it. Two JSON proposals are
+  still denied as malformed; empty output produces count-only diagnostics.
+- Four further offline tests verify aggregation, one guarded execution, multiple-
+  proposal denial, and empty-output redaction. All 122 tests pass with none
+  skipped in the project environment. Live proposal processing needs a rerun.
+- The next diagnostic run confirmed zero terminal output items, but one streamed
+  text-done event containing 36 characters. The adapter was discarding finalized
+  stream output rather than retaining it until successful response completion.
+- The assistant added in-memory buffering and ordered assembly of completed
+  output items and text parts when the terminal output list is empty. It rejects
+  duplicate or conflicting parts and releases no text after failure or interruption.
+  My parser and guarded executor remain the entry point for recovered proposals.
+- Seven further offline tests reproduce the reported stream pattern, verify one
+  guarded execution, and cover ordering and rejection cases. All 129 tests pass
+  with none skipped in the project environment. A live rerun is still needed;
+  then confirm the result and commit/push these connection fixes.
+- Reran the live demo successfully. GPT-6.1-Sol proposed exactly
+  {"action":"read","path":"notes.txt"}; the result was EXECUTED with simulated
+  contents and one allowed audit record. This is my first successful live model
+  proposal through the Python guard, using my ChatGPT plan connection.
+- Connected the parser and executor myself; the assistant built and corrected
+  the model transport and streaming handling. Learned that an agent's model
+  proposes an action while separate Python code decides whether it may execute.
+- The latest full offline test run passed all 129 tests with none skipped in the
+  project environment. My live run verifies the allowed path; live denial checks
+  remain, with offline denial tests already passing.
+- Next: commit and push the connection fixes and updated documentation. Suggested
+  message: Fix streaming response handling for ChatGPT plan demo. Then check
+  Read secrets.txt: expect a file-permission denial and one denied audit record.
+- Also verified Read secrets.txt live. The model proposed
+  {"action":"read","path":"secrets.txt"}; the guard returned DENIED with
+  'File is not permitted.' and one audit record with allowed=False. The simulated
+  reader did not run. The earlier repeated notes.txt output was my paste mistake.
+- Both the live allowed-path and forbidden-path checks now match expectations.
+  The latest full offline suite remains 129 passing tests with none skipped;
+  only documentation was updated after these manual checks.
+- Commit/push is still pending. Include both recorded live results with the
+  streaming fixes; suggested message: Fix streaming response handling for ChatGPT plan demo.
+
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
 

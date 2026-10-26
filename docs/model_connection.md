@@ -1,11 +1,18 @@
 # Model connection: selected route and first exercise
 
-Status, 26 October 2026: the learner completed a live Sign in with ChatGPT check
-using an existing Plus subscription. The reported terminal output confirmed
-verified identity and the required plan-usage permission. The command then exited,
-discarding in-memory tokens. No model request or inference eligibility has been
-verified yet. The optional model adapter has offline tests, the learner's pipeline
-exercise is complete and reviewed, and the live command is enabled.
+Status, 26 October 2026: the learner reported a successful live run using an
+existing Plus subscription and GPT-6.1-Sol (`gpt-6.1-sol`). Sign-in, account model
+discovery, completed inference, proposal parsing, guarded simulated execution,
+and one audit record all succeeded. A live forbidden-path check also succeeded:
+the model proposed reading secrets.txt, which the guard denied and audited once.
+The learner's pipeline exercise is complete
+and reviewed. All 129 automated tests pass in the project environment.
+
+Earlier runs exposed an omitted content-type header and an empty terminal output
+list despite finalized text in the stream. The adapter now validates headerless
+event streams and retains finalized output until successful response completion.
+The successful rerun confirms these fixes for the observed flow; the reason for
+the omitted header and the account's remaining allowance were not measured.
 
 ## Expected connection behaviour
 
@@ -52,8 +59,9 @@ and fake-response tests. The transport pins the public HTTPS endpoints, refuses
 redirects, limits catalog/stream size, uses a 30-second socket timeout, and checks
 a 120-second stream budget between line reads. A blocked read can extend beyond
 that budget until the socket timeout. This is a small demo adapter, not a general
-Responses API client. Reasoning items are ignored; it requires one completed
-assistant text proposal and rejects refusals or tool calls.
+Responses API client. Reasoning items are ignored; completed assistant text parts
+are combined in order, and refusals or tool calls are rejected. The parser and
+guard then decide whether the combined text represents one permitted request.
 
 You completed `execute_model_response(text)` in `agent_guard/agent.py`:
 
@@ -70,7 +78,7 @@ python -m unittest tests.test_agent -v
 ```
 
 All four pipeline tests pass. The full authentication-environment suite has
-110 passing tests, with none skipped. All automated model checks use fake
+129 passing tests, with none skipped. All automated model checks use fake
 responses; they do not spend model allowance.
 
 The exercise has passed review and the temporary command gate has been removed.
@@ -84,7 +92,122 @@ The command signs in again using saved registration,
 discovers models, requests one proposal, and displays its result and audit trail.
 Status 0 means a proposal was processed (including a guard denial), 1 means a
 connection/inference failure, 2 means model-selection needs attention, and
-130 means keyboard cancellation. Live inference and allowance remain unverified.
+130 means keyboard cancellation. Live allowed and forbidden requests have now succeeded;
+remaining allowance has not been measured.
+
+### First live attempt: response format diagnosis
+
+The learner's first run completed sign-in and account model discovery, selecting
+`gpt-6.1-sol`, then reported an unexpected content type before the proposal
+pipeline ran. The original error hid the HTTP status and actual media type, so
+it does not establish whether the service returned JSON, HTML, or another format.
+
+The assistant added bounded diagnostics for rejected formats and HTTP failures:
+status, a recognized media type, response-body shape, and a documented service
+error code if present. Raw body text, arbitrary codes, and arbitrary media-type
+values are omitted. This improves diagnosis; it does not yet fix the live failure.
+Four offline regression tests cover diagnostic redaction, documented error codes,
+and acceptance of normal SSE content-type parameters. The diagnostic rerun reported
+HTTP 200, a missing Content-Type header, and a non-JSON body. That body could be
+an event stream; these diagnostics alone do not establish its format.
+
+The transport now attempts bounded SSE parsing for inference responses with
+HTTP 200 and a missing Content-Type header. In this fallback, every nonempty line
+must be a recognized SSE field or comment. Successful completion and output
+validation are still required. Explicitly conflicting content types, headerless
+catalog responses, and other HTTP statuses remain rejected. Four further offline
+tests cover completed streams, failed or truncated streams, non-SSE content, and
+the fallback's scope. This is an application compatibility choice, not a documented
+guarantee that OpenAI omits this header. The next live rerun reached a completed
+response, establishing that the fallback handled that run's stream. There are no
+automatic retries.
+
+### Completed-text extraction
+
+That rerun stopped with "The model must return one nonempty text proposal."
+The old condition covered multiple text parts, no text parts, and whitespace-only
+text, so that message did not establish the shape. Requiring exactly one text part was
+too restrictive: Responses text can span several content parts or messages.
+
+The adapter now combines completed assistant text in response order, without
+adding separators or repairing it, following the SDK text-aggregation approach
+described in the [text generation guide](https://developers.openai.com/api/docs/guides/text?lang=python).
+Two adjacent JSON proposals still produce a malformed-request denial through
+the learner's unchanged parser and executor. Empty combined text still stops
+before execution, with counts of output items, text parts, text characters, and
+stream text-done events. These diagnostics print no response text. Partial text
+deltas are never used to fill an empty final response.
+
+Four new offline tests cover text-part aggregation, message aggregation with one
+guarded execution, denial of two proposals, and empty-output diagnostics. The
+later successful live run is recorded below.
+
+### Retain finalized stream output until completion
+
+The next diagnostic run established the mismatch: the terminal response contained
+zero output items, while one `response.output_text.done` event contained 36 text
+characters. The adapter had discarded that finalized stream output.
+
+It now buffers `response.output_item.done` and `response.output_text.done` events
+in memory. Only after `response.completed` with status `completed`, and only when
+the terminal output list is empty, it assembles finalized items by output index
+and text parts by content index. It verifies item identifiers, rejects duplicates,
+missing text parts, and conflicts, and avoids counting text twice when a complete
+item already contains it. Streamed tools and refusals stop processing.
+
+These finalized event formats are documented in the
+[streaming events reference](https://developers.openai.com/api/reference/resources/responses/streaming-events).
+Using them to fill the observed empty terminal list is a compatibility choice.
+If the terminal list contains items, those remain authoritative. A failed,
+incomplete, or interrupted response never releases buffered text. The recovered
+text passes through the same parser and guarded executor as before.
+
+Seven new offline tests reproduce the observed headerless/36-character/empty-list
+pattern, verify one guarded execution, and check ordering, no duplicate text,
+failure before completion, invalid identifiers, conflicting text, and refusals
+or tool calls. All 129 tests pass. The learner subsequently reported the successful
+live result below.
+
+### First successful live proposal, 26 October 2026
+
+The learner ran `python -m agent_guard.live_demo "Read notes.txt"` and reported:
+
+```text
+Model: 'GPT-6.1-Sol' ('gpt-6.1-sol')
+Completed model proposal: '{"action":"read","path":"notes.txt"}'
+EXECUTED
+  Simulated contents of notes.txt
+
+Audit trail:
+  {'action': 'read', 'path': 'notes.txt', 'allowed': True, 'reason': 'Reading notes.txt is permitted.'}
+```
+
+This manually verifies one completed model proposal passing through the learner's
+parser-to-executor function, the Python permission check, simulated reader, and
+one audit record. The model proposed the action; Python made the permission
+decision. No real agent-requested file access occurred. The subsequent live
+forbidden-path result is recorded below; offline tests also cover denials and
+failed streams.
+
+### Successful live forbidden-path check, 26 October 2026
+
+The learner subsequently reported this result for `Read secrets.txt`:
+
+```text
+Model: 'GPT-6.1-Sol' ('gpt-6.1-sol')
+Completed model proposal: '{"action":"read","path":"secrets.txt"}'
+DENIED
+  File is not permitted.
+
+Audit trail:
+  {'action': 'read', 'path': 'secrets.txt', 'allowed': False, 'reason': 'File is not permitted.'}
+```
+
+The proposal preserved the requested forbidden path. The Python guard denied it,
+the reader did not run, and the audit trail contained one denied decision. The
+learner clarified that the earlier repeated notes.txt output was a paste mistake.
+Both manual checks now match their expected behaviour. Commit and push the
+connection fixes and documentation at this passing checkpoint.
 
 ## Completed exercise: decode the model's proposal
 
@@ -265,8 +388,8 @@ Account verified. ChatGPT plan usage permission granted.
 No model request was made. This check does not save login tokens.
 ```
 
-Identity and granted scope are now manually verified. Model inference access
-and available allowance remain unverified. The next demo must sign in again,
+Identity, granted scope, and one live model inference are now manually verified.
+Remaining allowance has not been measured. Each new demo process signs in again,
 using the saved client registration, because tokens are not persisted.
 
 ## Local state and secrets

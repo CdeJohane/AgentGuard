@@ -140,7 +140,7 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication virtual environment, **all 110 tests pass**, with none
+In the authentication virtual environment, **all 129 tests pass**, with none
 skipped. The completed pipeline tests verify allowed, forbidden, malformed,
 and structurally invalid proposals. Eight signed-token tests are skipped if the optional
 authentication dependency is absent. The signed-token tests use locally generated
@@ -196,20 +196,29 @@ Exit status 0 means identity and permission were verified; 2 means identity was
 verified without the plan permission; 1 means failure; 130 means cancellation
 with Ctrl+C. Only non-token registration metadata is saved. A manual sign-in
 check succeeded on 26 October 2026, as reported by the learner: identity and
-plan-usage permission were verified. No model request has been verified yet;
-automated tests continue to use fake responses.
+plan-usage permission were verified. A separate live model demo also succeeded
+that day, with a guarded simulated read and one audit record. Automated tests
+continue to use fake responses.
 
 ## Current scope
 
-This is an educational prototype with one hard-coded permission rule and no
-completed AI model connection. Agent-requested file operations remain simulated;
+This is an educational prototype with one hard-coded permission rule and an
+optional real model connection. Agent-requested file operations remain simulated;
 installation and registration metadata use local filesystem storage. Requested
 paths are compared as strings; real path resolution and filesystem isolation
 are outside this version.
 
-The optional model adapter and live command are implemented with fake-response
-tests. The learner's pipeline exercise is complete and reviewed. Live inference
-remains unverified. With the authentication environment activated, try:
+The learner reported a successful live run on 26 October 2026 using GPT-6.1-Sol
+(`gpt-6.1-sol`). The model proposed `{"action":"read","path":"notes.txt"}`;
+the guarded executor returned simulated contents and recorded one allowed
+permission decision. The learner wrote the parser-to-executor connection.
+The learner also verified `Read secrets.txt`: the model preserved the forbidden
+path, the guard returned `File is not permitted.`, and one denied audit record
+was displayed without running the simulated reader.
+The adapter handles the observed missing content-type header and empty terminal
+output list by validating and retaining finalized stream events until successful
+completion. Details and diagnostic history are in the connection notes.
+With the authentication environment activated, try:
 
 ```powershell
 python -m agent_guard.live_demo "Read notes.txt"
@@ -243,13 +252,12 @@ and tests added in small steps. The completed exercises are preserved in the
 was used.
 
 The [flexible finish plan](docs/finish_plan.md) records proposed next steps.
-The next milestone is an optional real model connection that proposes requests
-for the existing guard, while file operations remain simulated. The selected
-route is supported Sign in with ChatGPT plan usage. Authentication code is now
-present, the scope exercise is complete, and the manual sign-in check succeeded.
-Model discovery and streaming handling have offline tests; the completed pipeline
-connects proposals to the guard. The next step is the first live model request
-and inference-access check.
+The optional real model connection has completed its first live run through the
+existing guard, while file operations remain simulated. The selected route is
+supported Sign in with ChatGPT plan usage. Model discovery and streaming handling
+have offline tests; the learner's completed pipeline connects proposals to the
+guard. Live allowed-path and forbidden-path checks have succeeded. The current
+checkpoint is to commit and push the passing connection fixes and documentation.
 The current demo remains offline. Details and
 the first parsing exercise are in the [connection notes](docs/model_connection.md).
 Configurable permissions are deferred. Each feature's expected behaviour will

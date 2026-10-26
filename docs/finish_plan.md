@@ -5,8 +5,9 @@ Monday morning, 2 November 2026 (Europe/London).
 
 Planning snapshot: 26 October 2026. Dates and proposed feature topics are subject to change.
 
-The first working milestone is complete: the demo runs and all twenty-six tests
-pass. The remaining week is for focused improvements and release preparation.
+The first working milestone had twenty-six passing tests. The project now has
+129 passing tests and a successful live model proposal through the guard. The
+remaining week is for focused improvements and release preparation.
 The feature topics below are proposed; their behaviour will be discussed before
 implementation, with the same small-step pair-programming approach.
 
@@ -25,16 +26,16 @@ final review happens after the last changes; daily checkpoints support it.
 The plan can adapt to progress and availability without adding features just
 to fill the remaining days.
 
-The current demo is offline. The next milestone adds one optional real model
-connection that proposes a request for the existing guarded executor. File
-operations stay simulated. The selected route is supported Sign in with ChatGPT
-plan usage. Authentication is implemented, and the learner reported a successful
-live identity and permission check on 26 October. The first model request and
-inference eligibility are still pending. Account model discovery and streaming
-response handling now have offline tests. The learner's completed-text pipeline
-exercise is complete and reviewed, all 110 tests pass in the authentication
-environment, and the live command is enabled. The next checkpoint is to commit
-and push, then verify the first live model response.
+The offline demo remains available alongside the optional real model connection.
+File operations stay simulated. The selected route is supported Sign in with
+ChatGPT plan usage. On 26 October, the learner reported a successful live run:
+GPT-6.1-Sol proposed reading notes.txt, the Python guard permitted it, the simulated
+reader returned contents, and one audit record was displayed. Stream handling
+fixes resolved the observed missing header and empty terminal output list.
+The learner's pipeline exercise is complete and reviewed, and all 129 tests pass
+in the authentication environment. The learner also verified a live secrets.txt
+proposal: the model preserved the path, the guard denied it, and one denied audit
+record appeared. Commit and push this milestone with both manual results recorded.
 The JSON decoding exercise is complete; see the
 [model connection notes](model_connection.md).
 Configurable permissions are deferred to keep the Saturday target manageable.
