@@ -101,10 +101,13 @@ boolean-only wrapper around `check_request()`.
 
 | File or directory | Responsibility |
 | --- | --- |
+| [AGENTS.md](AGENTS.md) | Working agreements for coding assistants and pair programming |
 | [agent_guard/guard.py](agent_guard/guard.py) | Request validation, permission decisions, and reasons |
 | [agent_guard/executor.py](agent_guard/executor.py) | Guarded entry point and simulated reader |
 | [agent_guard/audit.py](agent_guard/audit.py) | In-memory permission records |
 | [agent_guard/simulate.py](agent_guard/simulate.py) | Four-request demo and displayed output |
+| [agent_guard/model_requests.py](agent_guard/model_requests.py) | Decode model proposals as JSON before guard checks |
+| [agent_guard/oauth.py](agent_guard/oauth.py) | In-progress sign-in preparation and callback-state exercise |
 | [tests/](tests/) | Unit tests and integration tests |
 | [docs/](docs/) | Learning walkthrough, personal log, and flexible finish plan |
 
@@ -114,11 +117,20 @@ read the guard and audit helpers. Inside the package, `.guard` in an import mean
 
 ## Tests
 
-The current suite contains **26 tests** covering allowed and forbidden requests,
+All **41 tests pass**, covering allowed and forbidden requests,
 malformed input, denial-reason priority, and the boolean wrapper. Mock readers
 verify that permitted requests execute once and denied requests never execute.
 Audit tests check record fields, snapshots, order, and logging before execution.
 Integration tests exercise the demo and verify a fresh log on repeated runs.
+
+Six model-response tests verify JSON decoding and denial of malformed or
+forbidden proposals through the guarded executor. All tests are offline; they
+do not call a model or authenticate an account. See the
+[model connection notes](docs/model_connection.md).
+
+Nine OAuth tests cover sign-in URL preparation, fresh temporary values, PKCE,
+and callback-state validation. All forty-one tests pass with none skipped.
+The sign-in helpers do not launch a browser or make network requests yet.
 
 Run an individual area when working on it:
 
@@ -127,6 +139,8 @@ python -m unittest tests.test_guard -v
 python -m unittest tests.test_executor -v
 python -m unittest tests.test_audit -v
 python -m unittest tests.test_simulate -v
+python -m unittest tests.test_model_requests -v
+python -m unittest tests.test_oauth -v
 ```
 
 ## Current scope
@@ -143,6 +157,11 @@ Audit records describe **permission**, not completion. Reader exceptions current
 propagate to the caller. Records live only in memory, are lost when the process
 ends, and are cleared when the demo starts.
 
+Local `.env` files and `.agent_guard/` state are ignored by Git. The planned
+sign-in flow keeps temporary values and tokens in memory; no credentials are
+currently collected or saved. A `.env` file is plaintext, not encrypted storage.
+See the [storage plan](docs/model_connection.md#local-state-and-secrets).
+
 ## Learning and next steps
 
 This project was built through pair programming, with implementation exercises
@@ -152,6 +171,10 @@ and tests added in small steps. The completed exercises are preserved in the
 was used.
 
 The [flexible finish plan](docs/finish_plan.md) records proposed next steps.
-Configurable permissions and operation-failure handling are proposals, not
-current features. Each feature's expected behaviour will be discussed before
-implementation.
+The next milestone is an optional real model connection that proposes requests
+for the existing guard, while file operations remain simulated. The selected
+route is supported Sign in with ChatGPT plan usage; implementation and live
+eligibility checks are pending. The current demo remains offline. Details and
+the first parsing exercise are in the [connection notes](docs/model_connection.md).
+Configurable permissions are deferred. Each feature's expected behaviour will
+be discussed before implementation.

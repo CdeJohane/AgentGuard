@@ -135,6 +135,53 @@ including checks that denied requests never reach the reader and each execution
 attempt records one permission decision without logging file contents.
 
 --------------------------------------------------------------------------
+26 October 2026
+
+Session focus:
+- Added AGENTS.md with help to preserve the small-step pair-programming approach,
+  meaningful exercises, project layout, commands, and guarded-execution rules.
+- Learned that repository instructions guide coding assistants; runtime
+  permission enforcement remains in Python.
+- Updated the flexible plan to prioritize an optional real model connection
+  before Saturday, while retaining simulated file operations and offline tests.
+
+Model access discussion:
+- I asked which model access comes with my ChatGPT Plus subscription.
+- Reviewed official guidance distinguishing subscription access from separately
+  billed API-key usage, and the supported Sign in with ChatGPT route for eligible
+  local or open-source apps. Eligibility and setup still need checking.
+- Chose to pursue the supported Sign in with ChatGPT plan-usage route. It is not
+  implemented or authenticated yet; account eligibility and live access remain
+  unverified. The connection plan is recorded in docs/model_connection.md.
+- A model-response parser stub and six offline tests were supplied with help.
+  I implemented the parser using json.loads() and a JSONDecodeError handler.
+  All thirty-two tests passed, with none skipped, including checks that decoded
+  forbidden requests are denied and audited without calling the reader.
+- Reinforced that valid JSON is not necessarily a valid or permitted request:
+  decoding is separate from structural validation and permission enforcement.
+- Asked about .env files and keeping sensitive data out of Git. Learned that
+  .gitignore excludes untracked files, while .env is plaintext configuration,
+  not encryption or a substitute for protected credential storage.
+- Agreed to keep OAuth attempt values and eventual tokens in memory for the
+  first version. Only non-secret host and registration metadata is planned for
+  local persistence. Remembered sign-in is a later step.
+- Authorization URL and PKCE preparation were supplied with help, alongside
+  four passing preparation tests and a callback-state exercise. I implemented
+  the callback check using type, empty-value, and ASCII checks followed by
+  secrets.compare_digest(). All forty-one tests passed, with none skipped.
+- Learned that generated OAuth state is ASCII, so rejecting non-ASCII input
+  before compare_digest() is a valid approach for this flow. No browser,
+  token exchange, or live model request has run yet.
+- Added ignore rules with help for .env, .env.*, and .agent_guard/, allowing a
+  non-secret .env.example template. The local state directory is reserved; no
+  credentials or host metadata have been written there.
+
+Next hands-on step:
+- Review and commit this completed login-preparation checkpoint when ready.
+- Add host-ID persistence and the callback listener before implementing
+  token exchange and identity validation. Keep file operations simulated.
+
+--------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
 
 Date:

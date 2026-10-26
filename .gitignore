@@ -2,3 +2,9 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# Local configuration and future authentication metadata.
+.env
+.env.*
+!.env.example
+.agent_guard/

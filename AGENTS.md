@@ -1,0 +1,40 @@
+# Agent guard: working agreements
+
+## Project and learning approach
+
+This is a Python learning project for checking an AI agent's proposed actions.
+The learner knows Python and is new to agents. The current demo is offline and
+uses simulated file operations; a real model connection is the next milestone.
+
+- Work in small steps. Discuss each feature's expected behaviour before implementing it.
+- Explain unfamiliar agent concepts in plain language.
+- Agree meaningful pieces for the learner to write; preserve that ownership.
+- When reviewing an exercise, explain what works and any necessary corrections.
+- Label unfinished stubs and intentionally failing tests clearly.
+- Keep the finish plan flexible; discuss scope changes instead of adding features silently.
+
+## Layout and commands
+
+- Application code: `agent_guard/`; tests: `tests/`; learning notes and plans: `docs/`.
+- Run commands from the repository root.
+- Offline demo: `python -m agent_guard.simulate`.
+- Full test suite: `python -m unittest -v`.
+- Focused tests: `python -m unittest tests.test_guard -v` (or another test module).
+- Follow the existing package imports and standard-library unittest conventions.
+
+## Permission and execution behaviour
+
+- Default deny: only explicitly permitted actions may run.
+- Treat model-generated requests as untrusted input; Python code makes permission decisions.
+- Send proposed actions through `execute_request()`; denied requests must never reach the reader.
+- Keep file operations simulated unless a different scope is explicitly agreed.
+- Audit each execution attempt once before running the reader. Record permission reasons, not contents.
+- Keep credentials out of tracked files, output, and audit records.
+
+## Session checkpoints
+
+- Check the current files and user changes before editing.
+- Run checks appropriate to the change; report intentional exercise failures separately.
+- Update relevant documentation and the dated learning log for completed work.
+- Distinguish implemented features from proposals. Use `docs/finish_plan.md` for the flexible schedule.
+- Preserve the offline demo and offline tests when adding an optional model connection.
