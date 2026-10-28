@@ -395,6 +395,46 @@ Next hands-on step:
   interception is demonstrated. This log preserves the earlier plan.
 - This checkpoint changes documentation only. The latest full application suite
   remains 134 passing tests with none skipped; no live integration was installed.
+- Committed and pushed the product vision checkpoint as a99c4b9.
+
+28 October 2026 - Evening: starting the interception proof
+- Resumed with a clean working tree. The assistant checked the current official
+  Codex hooks documentation before inspecting installed integration components.
+- Observed VS Code 1.143.1, extension openai.chatgpt 26.1021.22027, and its bundled
+  Codex CLI 0.164.0-alpha.11.1. The bundle's feature listing reports hooks enabled.
+  The separate desktop CLI on PATH reports 0.161.0, so its version is not used
+  as proof of the extension's runtime. My actual chat workflow is still to confirm.
+- Learned that a hook is a callback at a specific lifecycle point. PreToolUse
+  must deny the action before execution; PostToolUse cannot undo a side effect.
+  Hook errors or uncovered paths can still let actions proceed, so successful
+  offline formatting checks do not establish real interception.
+- The assistant added an experimental stdin/stdout JSON responder and seven
+  offline tests. My exercise is make_block_decision(): construct the nested
+  PreToolUse denial response with the provided reason. It is not implemented yet.
+- Six new checks pass and one intentionally errors at my stub. The full suite
+  has 140 passing tests and that one error, with none skipped in the project
+  environment. No model requests, hook installation, or permission changes occurred.
+- Next: finish and review the responder, confirm the actual workflow, then prepare
+  a reviewable hook in a disposable project and test a harmless marker action.
+- Confirmed that I believe the workflow is local, like the one used to build
+  this app. The proof will target a fresh local Codex chat in VS Code and verify
+  that assumption during the live test.
+- Completed make_block_decision() myself with the nested PreToolUse denial
+  dictionary and BLOCK_REASON. Review confirmed it was correct; all 141 tests
+  passed before adding receipt support.
+- The assistant added minimal invocation receipts confined to the disposable
+  workspace's hook-receipts.jsonl, with no plaintext command logging, and three
+  tests for receipt contents, path confinement, and write-error redaction.
+  All 144 tests now pass with none skipped in the project environment.
+- Prepared ignored fixture .agent_guard/probe-workspaces/interception-0d2822d9
+  as a separate local Git project. It has a frozen responder, instructions, a
+  probe plan, and an inactive .codex/hooks.pending.json definition. No hook was
+  activated or trusted and no execution permissions were changed.
+- The frozen responder passed a direct fake-event preflight. Neither marker
+  nor a hook receipt exists yet. No live Codex request was made by these checks.
+- Next: commit/push the passing responder checkpoint, then run the baseline
+  marker command through a fresh local Codex chat in the disposable VS Code
+  project. Verify it succeeds before reviewing and activating the blocking hook.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

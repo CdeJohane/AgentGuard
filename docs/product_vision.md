@@ -20,8 +20,11 @@ An AgentGuard-owned chat panel would require a separate product decision.
 - A guarded executor, in-memory permission audit, and distinct execution failure.
 - An offline demo and a direct model-proposal demo using ChatGPT plan sign-in.
 - Manually verified live allowed-read, forbidden-file, and forbidden-action cases.
-- 134 passing tests in the project environment. Eight signed-token tests skip
-  when optional authentication packages are absent.
+- The completed Python prototype checkpoint had 134 passing tests. The current
+  [hook responder and receipt tests](interception_proof.md) expand the suite to
+  144 passing tests. Eight signed-token tests skip when optional authentication
+  packages are absent. A disposable fixture has an inactive hook definition;
+  live interception is not verified.
 
 There is no VS Code extension, interception of an existing Codex conversation,
 approval queue, configurable policy, or durable decision history yet.

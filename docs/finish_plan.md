@@ -7,8 +7,9 @@ provisional release estimates are in [product_vision.md](product_vision.md).
 
 Planning snapshot: 28 October 2026. Dates and proposed feature topics are subject to change.
 
-The first working milestone had twenty-six passing tests. The project now has
-134 passing tests and successful live model proposals through the guard. The
+The first working milestone had twenty-six passing tests. The completed Python
+prototype had 134 passing tests and successful live model proposals through the guard.
+The completed hook responder and receipts bring the suite to 144 passing tests. The
 remaining week is for proving integration toward the newly clarified VS Code
 product direction. The existing Python prototype remains the verified baseline.
 The feature topics below are proposed; their behaviour will be discussed before
@@ -18,7 +19,7 @@ implementation, with the same small-step pair-programming approach.
 | --- | --- |
 | Monday, 26 October | Completed the model connection and three live permission checks, with 129 passing offline tests. |
 | Tuesday, 27 October | No session; the planned model connection had already been completed on Monday. |
-| Wednesday, 28 October | Completed operation-failure handling and setup review. Clarified the VS Code companion vision and recorded the revised scope and readiness criteria. |
+| Wednesday, 28 October | Completed operation-failure handling and setup review. Committed the product vision. Evening: learner completed the hook response builder; 144 tests pass. An inactive disposable fixture is ready for the control run. |
 | Thursday, 29 October | Attempt a narrow interception proof in the intended VS Code/Codex workflow using dummy resources. Record supported paths and failure behaviour before choosing the adapter. |
 | Friday, 30 October | If interception works, demonstrate one covered action through the guard and review the slice. Otherwise document the blocker and preserve the working Python demo. Prepare an accurate progress-post draft. |
 | Saturday morning, 31 October | Demonstrate the verified scope, run applicable checks, and record achieved results and unresolved integration limits. |
@@ -81,3 +82,9 @@ enforcement boundaries, failure behaviour, privacy controls, and compatibility;
 the current 134 tests alone do not establish those broader guarantees.
 
 See the [README](../README.md) for the current project and the [learning log](learning_log.txt) for completed work.
+
+Evening investigation: the installed extension bundles Codex 0.164.0-alpha.11.1
+and its CLI reports hooks enabled. This does not prove the active chat's runtime
+or interception support. The [interception investigation](interception_proof.md)
+records the evidence, current learner exercise, and steps still required before
+installing a project-local hook or making a protection claim.

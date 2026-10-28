@@ -114,6 +114,7 @@ boolean-only wrapper around `check_request()`.
 | [agent_guard/simulate.py](agent_guard/simulate.py) | Four-request demo and displayed output |
 | [agent_guard/model_requests.py](agent_guard/model_requests.py) | Decode model proposals as JSON before guard checks |
 | [agent_guard/agent.py](agent_guard/agent.py) | Connect completed model text to guarded execution |
+| [agent_guard/hook_probe.py](agent_guard/hook_probe.py) | Experimental scoped hook responder and invocation receipts; live interception unverified |
 | [agent_guard/model_client.py](agent_guard/model_client.py) | Account model discovery and completed streaming responses |
 | [agent_guard/live_demo.py](agent_guard/live_demo.py) | Optional live model proposal and simulated execution demo |
 | [agent_guard/oauth.py](agent_guard/oauth.py) | Sign-in URL preparation, PKCE, and callback-state checks |
@@ -146,8 +147,10 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication virtual environment, **all 134 tests pass**, with none
-skipped. The completed reader-error handler is described in the
+In the authentication virtual environment, **all 144 tests pass**, with none
+skipped. The completed hook response builder, inactive disposable fixture, and
+installed-version observations are in the [interception investigation](docs/interception_proof.md).
+No live interception has been demonstrated. The completed reader-error handler is described in the
 [walkthrough](docs/walkthrough.md#seventh-exercise-completed-operation-failure).
 The completed pipeline tests verify allowed, forbidden, malformed,
 and structurally invalid proposals. Eight signed-token tests are skipped if the optional
