@@ -23,13 +23,16 @@ An AgentGuard-owned chat panel would require a separate product decision.
 - The completed Python prototype checkpoint had 134 passing tests. The current
   [hook responder and receipt tests](interception_proof.md) expand the suite to
   144 passing tests. Eight signed-token tests skip when optional authentication
-  packages are absent. A disposable fixture has an inactive hook definition;
-  live interception is not verified.
+  packages are absent.
+- A trusted project hook blocked one shell call at a disposable workspace root
+  in local VS Code. A successful control, exact matching receipt digest, absent
+  target marker, and unchanged responder source independently support that proof.
 
-There is no VS Code extension, interception of an existing Codex conversation,
-approval queue, configurable policy, or durable decision history yet.
-Agent-requested file operations remain simulated. Direct inference is separate
-from controlling Codex's coding tools.
+There is no AgentGuard VS Code extension, approval queue, configurable policy,
+or product-wide durable decision history yet. Application file operations remain
+simulated; the isolated proof uses real dummy markers and a receipt file. The
+experimental hook denies shell calls only at its selected workspace root. Direct
+inference remains separate from controlling Codex's coding tools.
 
 ## Intended workflow
 
@@ -87,11 +90,12 @@ Official sources checked on 28 October 2026:
 - [Permission profiles](https://learn.chatgpt.com/docs/permissions) provide
   runtime-specific filesystem/network boundaries with documented limitations.
 
-Next, prove one harmless action is denied before any side effect in a disposable
-project, using the intended VS Code/Codex workflow. Record versions, covered
-tools, bypasses, and the actual enforcement point. Test unavailable guard, timeout,
-changed arguments, and unavailable UI. Use dummy resources. This document does
-not install live hooks or authorize changes to execution permissions.
+One harmless marker command has now been denied before its side effect in the
+intended local VS Code/Codex workflow; see the [proof record](interception_proof.md).
+Next, record coverage and test unavailable guard, timeout, changed arguments,
+and unavailable UI using dummy resources. Those failure cases remain unverified.
+The product document itself does not authorize additional hooks or permission
+changes beyond the separately agreed disposable experiment.
 
 ## Release stages and provisional estimates
 

@@ -5,8 +5,9 @@ letting it run, explains its decision, and records it in an audit trail.
 
 The product direction is a security companion for Codex in VS Code: project
 policies, review of uncertain actions, and records of skipped work. The current
-implementation is the Python prototype below; it does not yet intercept an
-existing Codex session or provide a VS Code extension. See the
+implementation is a Python prototype plus a separately configured experimental
+Codex hook. One shell-call interception has been verified in a disposable local
+VS Code project; there is no AgentGuard VS Code extension yet. See the
 [product vision and release criteria](docs/product_vision.md).
 
 The demo uses simulated requests and pretend file contents. You can explore the
@@ -114,7 +115,7 @@ boolean-only wrapper around `check_request()`.
 | [agent_guard/simulate.py](agent_guard/simulate.py) | Four-request demo and displayed output |
 | [agent_guard/model_requests.py](agent_guard/model_requests.py) | Decode model proposals as JSON before guard checks |
 | [agent_guard/agent.py](agent_guard/agent.py) | Connect completed model text to guarded execution |
-| [agent_guard/hook_probe.py](agent_guard/hook_probe.py) | Experimental scoped hook responder and invocation receipts; live interception unverified |
+| [agent_guard/hook_probe.py](agent_guard/hook_probe.py) | Experimental scoped hook responder; one live shell-call denial verified |
 | [agent_guard/model_client.py](agent_guard/model_client.py) | Account model discovery and completed streaming responses |
 | [agent_guard/live_demo.py](agent_guard/live_demo.py) | Optional live model proposal and simulated execution demo |
 | [agent_guard/oauth.py](agent_guard/oauth.py) | Sign-in URL preparation, PKCE, and callback-state checks |
@@ -148,9 +149,11 @@ over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
 In the authentication virtual environment, **all 144 tests pass**, with none
-skipped. The completed hook response builder, inactive disposable fixture, and
+skipped. The completed hook response builder, disposable fixture, and
 installed-version observations are in the [interception investigation](docs/interception_proof.md).
-No live interception has been demonstrated. The completed reader-error handler is described in the
+The control marker write succeeded. After trusting the project hook, the blocked
+command produced one matching denial receipt and no target file. This verifies
+one shell call at that disposable workspace root. The completed reader-error handler is described in the
 [walkthrough](docs/walkthrough.md#seventh-exercise-completed-operation-failure).
 The completed pipeline tests verify allowed, forbidden, malformed,
 and structurally invalid proposals. Eight signed-token tests are skipped if the optional
@@ -282,7 +285,8 @@ The completed operation-failure exercise also separates permission from executio
 success, with fake-error tests covering the failure path. The offline demo remains
 available. Details and
 the first parsing exercise are in the [connection notes](docs/model_connection.md).
-The [product vision](docs/product_vision.md) guides the next phase: first prove
-pre-execution interception in the intended VS Code workflow, then build policy
-configuration and human review on that connection. Saturday is a proof-of-concept
+The [product vision](docs/product_vision.md) guides the next phase. A narrow
+pre-execution interception proof has succeeded in the local VS Code workflow.
+Failure behaviour and coverage need verification before relying on the adapter
+for configurable policies or human review. Saturday is a proof-of-concept
 milestone. Each feature's expected behaviour will be discussed before implementation.

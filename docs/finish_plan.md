@@ -19,9 +19,9 @@ implementation, with the same small-step pair-programming approach.
 | --- | --- |
 | Monday, 26 October | Completed the model connection and three live permission checks, with 129 passing offline tests. |
 | Tuesday, 27 October | No session; the planned model connection had already been completed on Monday. |
-| Wednesday, 28 October | Completed operation-failure handling and setup review. Committed the product vision. Evening: learner completed the hook response builder; 144 tests pass. An inactive disposable fixture is ready for the control run. |
-| Thursday, 29 October | Attempt a narrow interception proof in the intended VS Code/Codex workflow using dummy resources. Record supported paths and failure behaviour before choosing the adapter. |
-| Friday, 30 October | If interception works, demonstrate one covered action through the guard and review the slice. Otherwise document the blocker and preserve the working Python demo. Prepare an accurate progress-post draft. |
+| Wednesday, 28 October | Completed operation-failure handling and setup review. Evening: completed/committed the responder; 144 tests pass. Verified control and one trusted project-hook denial in local VS Code with a matching receipt and no blocked marker. |
+| Thursday, 29 October | Record coverage and test failure behaviour in the disposable setup before choosing the next adapter step. |
+| Friday, 30 October | Review the verified integration slice and its limits. Address concrete gaps and prepare an accurate progress-post draft. |
 | Saturday morning, 31 October | Demonstrate the verified scope, run applicable checks, and record achieved results and unresolved integration limits. |
 
 At the end of each session, review that session's changes, update the relevant
@@ -68,7 +68,7 @@ clarification was committed as `9892647`. Its setup-verification notes are
 retained in the current documentation update.
 The JSON decoding exercise is complete; see the
 [model connection notes](model_connection.md).
-The next phase depends on an interception proof. Selecting a project, configurable
+The first narrow interception proof has succeeded. Selecting a project, configurable
 policies, human review, and deferred records are product requirements, not current
 capabilities. No live hooks or execution-policy changes have been installed by
 this documentation pass.
@@ -85,6 +85,7 @@ See the [README](../README.md) for the current project and the [learning log](le
 
 Evening investigation: the installed extension bundles Codex 0.164.0-alpha.11.1
 and its CLI reports hooks enabled. This does not prove the active chat's runtime
-or interception support. The [interception investigation](interception_proof.md)
-records the evidence, current learner exercise, and steps still required before
-installing a project-local hook or making a protection claim.
+or interception support by itself. The subsequent [live proof](interception_proof.md)
+demonstrated one explicit denial at the disposable workspace root. Commit the
+recorded evidence, then agree the next failure/coverage checks before extending
+the adapter. The result supports only the tested action and scope.

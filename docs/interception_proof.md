@@ -1,8 +1,9 @@
 # Interception proof: investigation and offline responder
 
-Status: 28 October 2026, evening session. Live interception is not verified.
-A disposable project and inactive hook definition are prepared. The definition
-has not been activated or trusted, and no execution permissions have changed.
+Status: 28 October 2026, evening session. One live shell-call interception is
+verified in the disposable local VS Code/Codex project. The control write
+succeeded. After the learner trusted the project hook, the planned marker command
+was denied before execution. No sandbox permissions were changed.
 
 ## Installed components observed
 
@@ -19,8 +20,11 @@ The CLI commands completed with warnings about shared temporary bookkeeping
 directories being inaccessible in the tool environment. No trust or sandbox
 configuration was altered. A custom CLI override, WSL/remote workspace, or cloud
 task could use a different runtime. The learner believes their workflow is local.
-Target a fresh local Codex chat in VS Code as the working assumption, then verify
-it during the proof; installed capabilities alone do not establish coverage.
+The learner used a local Codex chat in the disposable VS Code workspace for the
+control and blocked runs. The versions above describe the installed components;
+they are not a separate process-level identification of the live chat's binary.
+The observed result, rather than installed capabilities alone, establishes the
+limited coverage described below.
 
 ## What the first proof should demonstrate
 
@@ -89,14 +93,15 @@ events, not live Codex calls. The learner's dictionary was preserved.
 Fixture: `.agent_guard/probe-workspaces/interception-0d2822d9/` (ignored by Git).
 It is a separately initialized local Git project, with no remote configured.
 It contains a frozen copy of the responder, probe-plan.json, constrained experiment
-instructions, and `.codex/hooks.pending.json`. That pending filename is not the
-active hooks.json filename. No global or main-project hook config was changed.
+instructions, and a project hook definition. Initially staged as
+`.codex/hooks.pending.json`, it is now `.codex/hooks.json` after the successful
+control. No global or main-project hook config was changed.
 
 The prepared definition targets Bash synchronously, invokes the frozen responder
 with an absolute interpreter/workspace/receipt path, and uses a five-second
 timeout. The frozen responder passed a direct fake-event preflight without
 writing a receipt. Both baseline-marker.txt and blocked-marker.txt were absent
-after preparation. Live control and blocked runs are still pending.
+after preparation. Both the control and blocked runs are now verified.
 
 First, use a fresh LOCAL Codex chat in that VS Code workspace to run exactly:
 
@@ -104,13 +109,54 @@ First, use a fresh LOCAL Codex chat in that VS Code workspace to run exactly:
 Set-Content -LiteralPath 'baseline-marker.txt' -Value 'AGENTGUARD_BASELINE_20261028'
 ```
 
-This control is expected to succeed while the hook is inactive. Verify the actual
-file afterwards. A failed control would make a later missing marker inconclusive.
+The learner reported exit code 0 with no output. Independent inspection confirmed
+baseline-marker.txt contained AGENTGUARD_BASELINE_20261028. At that check the hook
+was inactive, blocked-marker.txt was absent, and no receipt existed. This verifies
+the positive control. A failed control would make a later missing marker inconclusive.
 Real writes here are limited to disposable proof resources; the application's
 simulated file operations are unchanged.
 
-After reviewing the control, review the pending hook definition, activate its
-project-local filename, and trust the exact definition using Codex's supported
-interface. Then test the blocked-marker.txt command in probe-plan.json and
-inspect the tool attempt, matching receipt, and absent marker independently.
-That activation, trust step, blocked action, and failure-case tests have not run.
+After reviewing the control and checking the frozen responder's source digest,
+the assistant renamed only this fixture's pending definition to hooks.json.
+control-verification.json records the observed state. The learner's commit
+c14631c contains the passing responder checkpoint.
+
+The learner reloaded the disposable window, found the hook, and reported clicking
+Trust. The following blocked test then demonstrated the trusted responder running.
+
+## Verified blocked run
+
+The requested PowerShell command was:
+
+```powershell
+Set-Content -LiteralPath 'blocked-marker.txt' -Value 'AGENTGUARD_BLOCKED_20261028'
+```
+
+The learner reported the Codex tool result:
+
+```text
+Command blocked by PreToolUse hook: AgentGuard probe: shell execution is blocked in this disposable project.
+```
+
+Codex reported stopping without retrying or using another tool. Independent
+filesystem checks confirmed:
+
+| Evidence | Observed result |
+| --- | --- |
+| Successful control marker | Still present |
+| blocked-marker.txt | Absent |
+| Hook receipts | Exactly one |
+| Receipt event/tool/decision | PreToolUse / Bash / deny |
+| Receipt command digest | Matches the exact planned command |
+| Frozen responder digest | Matches the prepared source |
+
+The command digest is
+`1e1e5d417de364bd440fa4e02acbaae72b34b3cffd7562c17eb2cec1f76d7d99`.
+The ignored fixture's interception-verification.json retains the measured state.
+The hook remains configured only in this disposable project.
+
+This demonstrates pre-execution denial of this shell call at this workspace
+root. It does not establish coverage of all Codex tools, subdirectories, sandbox
+escapes, guard modification, or failure behaviour. The probe denies all scoped
+shell calls; it does not yet apply a user-configurable product policy.
+Live timeout, missing-responder, and other failure-case tests remain to be done.

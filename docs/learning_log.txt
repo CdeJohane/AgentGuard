@@ -435,6 +435,33 @@ Next hands-on step:
 - Next: commit/push the passing responder checkpoint, then run the baseline
   marker command through a fresh local Codex chat in the disposable VS Code
   project. Verify it succeeds before reviewing and activating the blocking hook.
+- Committed the passing responder checkpoint as c14631c. Ran the control command
+  in the disposable Codex project and reported exit code 0 with no output.
+- Independent filesystem inspection confirmed baseline-marker.txt existed with
+  the expected content, while blocked-marker.txt, receipts, and the active hook
+  filename were absent. This confirms the positive control before interception.
+- The assistant verified the frozen responder digest and renamed only this
+  disposable project's pending definition to .codex/hooks.json. It is now eligible
+  for discovery; no main-project or user-wide hook configuration was changed.
+- Codex hook trust and live blocking remain unverified. Next: review/trust this
+  project hook in the supported interface before attempting the blocked marker.
+- Found the project hook in Codex and clicked Trust. Then requested the exact
+  blocked-marker.txt command through the terminal tool in that disposable project.
+- The tool reported 'Command blocked by PreToolUse hook' with the expected
+  AgentGuard reason. Codex reported stopping without retrying or creating the
+  file by another method.
+- Independent inspection found exactly one PreToolUse/Bash denial receipt whose
+  SHA-256 matched the exact planned command. blocked-marker.txt did not exist;
+  the successful control marker remained present and the frozen source matched
+  its prepared digest. This is the first verified live interception proof.
+- The result is scoped to this shell call at this disposable workspace root.
+  Failure cases, other tool paths, and product-wide protection remain unverified.
+  My response builder is part of the tested responder; the assistant prepared
+  the fixture, receipt handling, and independent evidence checks.
+- Documentation now records the proof and its limits. No application code changed
+  in this evidence update; the latest full suite remains 144 passing tests with
+  none skipped in the project environment.
+- Next checkpoint: commit/push with message: Record verified Codex interception proof.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
