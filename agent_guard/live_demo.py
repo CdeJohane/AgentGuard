@@ -6,6 +6,7 @@ import sys
 from .agent import execute_model_response
 from .audit import audit_log
 from .auth_tokens import AuthenticationError
+from .executor import OperationError
 from .model_client import ModelClient, ModelRequestError
 from .oauth_callback import CallbackError
 from .sign_in import sign_in
@@ -42,6 +43,11 @@ def main(argv=None) -> int:
     except KeyboardInterrupt:
         print("Demo cancelled.", file=sys.stderr)
         return 130
+    except OperationError as error:
+        print("FAILED")
+        print(f"  {error}")
+        display_audit_log()
+        return 1
     except (AuthenticationError, CallbackError, TimeoutError, ModelRequestError) as error:
         print(f"Demo stopped: {error}", file=sys.stderr)
         return 1

@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from agent_guard.audit import audit_log
+from agent_guard.executor import OperationError
 from agent_guard.live_demo import main
 from agent_guard.model_client import ModelChoice, ModelRequestError
 
@@ -61,3 +62,24 @@ class LiveDemoTests(unittest.TestCase):
             with redirect_stdout(StringIO()), redirect_stderr(errors):
                 self.assertEqual(main(["Read notes.txt"]), 1)
         self.assertNotIn("private token", errors.getvalue())
+
+    def test_operation_failure_is_displayed_with_allowed_audit_and_failure_exit_status(self):
+        with patch("agent_guard.live_demo.sign_in"), patch("agent_guard.live_demo.ModelClient") as factory:
+            client = factory.return_value
+            client.list_models.return_value = [ModelChoice("first", "First model")]
+            client.propose.return_value = '{"action":"read","path":"notes.txt"}'
+            output = StringIO()
+            with patch("agent_guard.executor.simulated_read", side_effect=OperationError()) as reader:
+                with redirect_stdout(output):
+                    self.assertEqual(main(["Read notes.txt"]), 1)
+        client.propose.assert_called_once_with("Read notes.txt", "first")
+        reader.assert_called_once_with("notes.txt")
+        text = output.getvalue()
+        self.assertIn("\nFAILED\n  The permitted read failed.\n", text)
+        self.assertNotIn("\nEXECUTED\n", text)
+        self.assertNotIn("\nDENIED\n", text)
+        self.assertIn("Audit trail:", text)
+        self.assertEqual(audit_log, [{
+            "action": "read", "path": "notes.txt", "allowed": True,
+            "reason": "Reading notes.txt is permitted.",
+        }])

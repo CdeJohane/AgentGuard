@@ -140,8 +140,10 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication virtual environment, **all 129 tests pass**, with none
-skipped. The completed pipeline tests verify allowed, forbidden, malformed,
+In the authentication virtual environment, **all 134 tests pass**, with none
+skipped. The completed reader-error handler is described in the
+[walkthrough](docs/walkthrough.md#seventh-exercise-completed-operation-failure).
+The completed pipeline tests verify allowed, forbidden, malformed,
 and structurally invalid proposals. Eight signed-token tests are skipped if the optional
 authentication dependency is absent. The signed-token tests use locally generated
 keys and fake responses; they do not contact OpenAI. Host-ID tests verify creation,
@@ -234,9 +236,12 @@ Checks apply to requests sent through `execute_request()`. These are ordinary
 Python functions, not an operating-system sandbox; code in the same process can
 call the reader directly or modify the shared audit list.
 
-Audit records describe **permission**, not completion. Reader exceptions currently
-propagate to the caller. Records live only in memory, are lost when the process
-ends, and are cleared when the demo starts.
+Audit records describe **permission**, not completion. The executor translates
+reader `OSError` into `OperationError` with a fixed safe message. Both demos
+display it as `FAILED` with the original allowed audit record; they do not retry
+the operation. Other unexpected errors propagate to the caller. Successful and
+denied return tuples are unchanged. Records live only
+in memory, are lost when the process ends, and are cleared when the demo starts.
 
 Local `.env` files and `.agent_guard/` state are ignored by Git. The sign-in
 controller keeps temporary values and tokens in memory; only the host ID, issued
@@ -261,7 +266,9 @@ have offline tests; the learner's completed pipeline connects proposals to the
 guard. Live allowed-path, forbidden-path, and forbidden-action checks have
 succeeded. The connection fixes are committed and pushed; the latest documentation
 records the final live action-denial check.
-The current demo remains offline. Details and
+The completed operation-failure exercise also separates permission from execution
+success, with fake-error tests covering the failure path. The offline demo remains
+available. Details and
 the first parsing exercise are in the [connection notes](docs/model_connection.md).
 Configurable permissions are deferred. Each feature's expected behaviour will
 be discussed before implementation.

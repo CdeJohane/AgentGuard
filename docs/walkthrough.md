@@ -199,3 +199,43 @@ python -m unittest tests.test_simulate -v
 These integration tests exercise the complete flow, checking exactly one reader
 call, the contents or reason shown for each request, four audit records without
 file contents, and a fresh log when the demo is run again.
+
+## Seventh exercise (completed): operation failure
+
+Behaviour agreed on 28 October 2026: permission and execution are separate.
+A permitted operation can fail. Keep its one audit record as `allowed=True`
+with the guard's permission reason, then report the execution failure separately.
+
+The assistant added `OperationError` in `agent_guard/executor.py`, with a fixed
+message: `The permitted read failed.` The demos catch it and display `FAILED`,
+not a denial or success. The live command displays the audit trail and exits
+with status 1. The offline demo continues to its other requests without retrying
+the failed read. Existing successful and denied `(bool, str)` returns remain.
+
+You completed the permitted branch of `execute_request()`:
+
+1. Put only the reader call inside a `try` block.
+2. Caught `OSError`, which also covers common read errors such as
+   `FileNotFoundError` and `PermissionError`.
+3. Raised `OperationError()` while suppressing the original exception context.
+   Python's `from None` syntax prevents a displayed traceback from including
+   the original error message.
+
+Keep permission checking and auditing before the reader. Do not add another
+audit entry or change the permission decision. Catching only the expected read
+error also leaves programming errors visible to the existing outer error handling.
+
+```powershell
+python -m unittest tests.test_executor -v
+```
+
+Your handler passed review. The expanded full suite has 134 passing tests
+with none skipped in the project environment.
+Tests fake read failures; no real file access or live model calls are needed.
+Other new tests check the demo handlers using an already-translated
+`OperationError`. Tests also verify that programming errors are not disguised
+as read failures and that an audit error prevents the reader from running.
+
+The normal simulated reader always returns pretend contents; running the usual
+demo alone will not trigger this error. The full suite has passed and the notes
+are updated; this completed feature is ready for the learner's commit/push.

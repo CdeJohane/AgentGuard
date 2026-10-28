@@ -1,7 +1,7 @@
 """Demonstrate guarded execution and auditing without accessing real files."""
 
 from .audit import audit_log
-from .executor import execute_request
+from .executor import OperationError, execute_request
 
 
 def display_result(request: object, allowed: bool, message: str) -> None:
@@ -29,8 +29,12 @@ def main() -> None:
     audit_log.clear()
     print("Simulated requests only; no files will be accessed.\n")
     for request in requests:
-        decision, msg = execute_request(request)
-        display_result(request, decision, msg)
+        try:
+            decision, msg = execute_request(request)
+            display_result(request, decision, msg)
+        except OperationError as error:
+            print(f"FAILED: {request!r}")
+            print(f"  {error}")
 
     display_audit_log()
 

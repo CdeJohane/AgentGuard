@@ -328,6 +328,38 @@ Next hands-on step:
 - Session complete before lecture preparation. Final housekeeping: commit/push
   the updated notes with message: Document successful live guard checks.
 
+28 October 2026 - Distinguishing permission from execution failure
+- Resumed on Wednesday after skipping Tuesday. The previous documentation
+  checkpoint was committed as 77ae1c9, and the working tree was clean. A fresh
+  baseline run passed all 129 tests with none skipped in the project environment.
+- Agreed the next behaviour: an agent's action may be permitted but fail during
+  execution. The demo should report FAILED with a safe message, while the single
+  audit record still says allowed=True because it records permission.
+- The assistant added OperationError with a fixed safe message, failure handling
+  in both demos, and five tests. Expected read failures should not expose the
+  original error text or trigger automatic retries. No real file access was added.
+- My exercise is to catch OSError around only the reader call in execute_request(),
+  then raise OperationError while suppressing the original exception context.
+  Permission checks and the one audit record stay before the reader call.
+- The first expanded run had 133 passing tests and one intentional exercise error
+  at the unchanged reader call, with none skipped in the project environment.
+  The new tests use fake read errors and fake model responses; no live model
+  usage was consumed. My handler was not implemented at that point.
+- Next: write the handler, run the focused tests, review it together, then run
+  the full suite and commit/push the passing checkpoint.
+- Completed the handler myself: wrapped only the simulated_read() call in try,
+  caught OSError, and raised OperationError() from None. Review confirmed the
+  logic was correct; the assistant removed exercise comments and clarified that
+  from None hides the original exception context, rather than every traceback.
+- The full suite now passes all 134 tests with none skipped in the project
+  environment. Tests confirm one allowed audit record after a failed read,
+  safe error output, no retry, and distinct FAILED display in both demos.
+  The offline demo continues to its other requests; the live command exits 1.
+- The assistant updated the walkthrough, README, connection notes, and finish
+  plan to mark the exercise complete. No live model request was needed.
+- Next: commit/push this passing checkpoint. Suggested message:
+  Handle failures of permitted agent operations.
+
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
 

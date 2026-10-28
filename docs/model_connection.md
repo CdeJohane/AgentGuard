@@ -8,7 +8,10 @@ the model proposed reading secrets.txt, which the guard denied and audited once.
 The live forbidden-action check also passed: writing notes.txt was denied with
 `Action is not permitted.` and one denied audit record.
 The learner's pipeline exercise is complete
-and reviewed. All 129 automated tests pass in the project environment.
+and reviewed. Its completed checkpoint had 129 passing automated tests. The
+28 October operation-failure exercise is complete, bringing the suite to 134
+passing tests with none skipped in the project environment; see the
+[walkthrough](walkthrough.md#seventh-exercise-completed-operation-failure).
 
 Earlier runs exposed an omitted content-type header and an empty terminal output
 list despite finalized text in the stream. The adapter now validates headerless
@@ -80,7 +83,8 @@ python -m unittest tests.test_agent -v
 ```
 
 All four pipeline tests pass. The full authentication-environment suite has
-129 passing tests, with none skipped. All automated model checks use fake
+129 passing tests at that checkpoint, with none skipped. The newer operation-
+failure exercise's status is linked above. All automated model checks use fake
 responses; they do not spend model allowance.
 
 The exercise has passed review and the temporary command gate has been removed.
@@ -224,8 +228,8 @@ the proposal `{"action":"write","path":"notes.txt"}`, followed by `DENIED` and
 The model preserved the forbidden action on an otherwise permitted path. The
 guard rejected the action before the simulated reader ran. This completes the
 three planned live checks for this session: allowed read, forbidden file, and
-forbidden action. The latest full automated run remains 129 passing tests with
-none skipped; this final checkpoint changes documentation only.
+forbidden action. That checkpoint's full automated run had 129 passing tests with
+none skipped; its final update changed documentation only.
 
 ## Completed exercise: decode the model's proposal
 

@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from agent_guard.audit import audit_log
+from agent_guard.executor import OperationError
 from agent_guard.simulate import main
 
 
@@ -62,6 +63,23 @@ class DemoTests(unittest.TestCase):
             main()
         self.assertEqual(len(audit_log), 4)
         self.assertEqual(audit_log, first_run)
+
+    def test_operation_failure_is_displayed_and_later_denied_requests_still_run(self):
+        output = StringIO()
+        # This checks the demo's handling of an already-translated failure.
+        with patch("agent_guard.executor.simulated_read", side_effect=OperationError()) as reader:
+            with redirect_stdout(output):
+                main()
+        reader.assert_called_once_with("notes.txt")
+        text = output.getvalue()
+        self.assertIn("FAILED: {'action': 'read', 'path': 'notes.txt'}", text)
+        self.assertIn("The permitted read failed.", text)
+        self.assertNotIn("EXECUTED:", text)
+        self.assertEqual(text.count("DENIED:"), 3)
+        self.assertIn("Audit trail:", text)
+        self.assertEqual(len(audit_log), 4)
+        self.assertTrue(audit_log[0]["allowed"])
+        self.assertEqual(audit_log[0]["reason"], "Reading notes.txt is permitted.")
 
 
 if __name__ == "__main__":
