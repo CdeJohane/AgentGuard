@@ -166,12 +166,15 @@ python -m unittest tests.test_local_state -v
 
 ## Optional authentication setup and sign-in check
 
-On Windows/PowerShell, use a virtual environment for the optional authentication dependency. If you do
-not already have one, create it with `python -m venv venv`, then run:
+On Windows/PowerShell, run these commands from the repository root to create and
+activate a virtual environment, install the optional authentication dependency,
+and run the full test suite:
 
 ```powershell
-.\venv\Scripts\python.exe -m pip install -r requirements-auth.txt
-.\venv\Scripts\python.exe -m unittest -v
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+python -m pip install -r requirements-auth.txt
+python -m unittest -v
 ```
 
 `has_plan_scope()` in `agent_guard/oauth.py` rejects non-string input, splits the
@@ -179,14 +182,14 @@ scope string into individual names, and checks for the complete name
 `chatgpt.tokens.use.direct`. A substring is not enough.
 
 ```powershell
-.\venv\Scripts\python.exe -m unittest tests.test_oauth.PlanScopeTests -v
+python -m unittest tests.test_oauth.PlanScopeTests -v
 ```
 
 To try a live sign-in, run this command and complete Continue with ChatGPT in
 your browser:
 
 ```powershell
-.\venv\Scripts\python.exe -m agent_guard.sign_in
+python -m agent_guard.sign_in
 ```
 
 The check reports verified identity and whether the required plan permission was
