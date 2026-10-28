@@ -1,7 +1,13 @@
-# Agent guard
+# AgentGuard
 
 A Python learning project that checks an agent's proposed file operation before
 letting it run, explains its decision, and records it in an audit trail.
+
+The product direction is a security companion for Codex in VS Code: project
+policies, review of uncertain actions, and records of skipped work. The current
+implementation is the Python prototype below; it does not yet intercept an
+existing Codex session or provide a VS Code extension. See the
+[product vision and release criteria](docs/product_vision.md).
 
 The demo uses simulated requests and pretend file contents. You can explore the
 permission flow without an AI account, API key, or real file access.
@@ -273,5 +279,7 @@ The completed operation-failure exercise also separates permission from executio
 success, with fake-error tests covering the failure path. The offline demo remains
 available. Details and
 the first parsing exercise are in the [connection notes](docs/model_connection.md).
-Configurable permissions are deferred. Each feature's expected behaviour will
-be discussed before implementation.
+The [product vision](docs/product_vision.md) guides the next phase: first prove
+pre-execution interception in the intended VS Code workflow, then build policy
+configuration and human review on that connection. Saturday is a proof-of-concept
+milestone. Each feature's expected behaviour will be discussed before implementation.

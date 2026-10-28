@@ -1,5 +1,10 @@
 # Model connection: selected route and first exercise
 
+Scope clarification, 28 October 2026: this document describes the prototype's
+direct model connection. It does not establish interception of an existing Codex
+chat or tool call. The proposed VS Code/Codex adapter is tracked separately in
+the [product vision](product_vision.md); that integration is not implemented yet.
+
 Status, 26 October 2026: the learner reported a successful live run using an
 existing Plus subscription and GPT-6.1-Sol (`gpt-6.1-sol`). Sign-in, account model
 discovery, completed inference, proposal parsing, guarded simulated execution,

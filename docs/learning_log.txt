@@ -359,6 +359,42 @@ Next hands-on step:
   plan to mark the exercise complete. No live model request was needed.
 - Next: commit/push this passing checkpoint. Suggested message:
   Handle failures of permitted agent operations.
+- Committed the operation-failure feature as 951d823; the working tree was clean
+  before starting the setup review.
+- The assistant exported the committed files into a temporary checkout and made
+  a fresh environment without optional authentication packages. The offline demo
+  passed with one execution and three denials. The suite ran 134 tests: 126 passed
+  and eight signed-token tests were skipped, as documented. Temporary files were
+  cleaned up. No live model requests or fresh package installation were made.
+- Next documentation exercise: write a clear optional-setup command block in
+  README.md covering environment creation, activation, dependency installation,
+  and running tests. Use python for commands after activation. This edit is
+  pending; review it together before committing the setup notes.
+- Added the activation step to the README myself. Review caught a path typo:
+  .venv names a different folder, while .\venv means the venv folder in the
+  current directory. The assistant corrected it to .\venv\Scripts\Activate.ps1.
+- The assistant grouped the four setup steps in one copyable block and changed
+  later test/sign-in commands to python after activation. This clarifies the
+  existing working setup; application code and dependencies did not change.
+- Setup documentation review is complete. Commit/push the README and verification
+  notes with suggested message: Clarify virtual environment setup instructions.
+- Committed the README setup clarification as 9892647. Earlier setup-verification
+  and learning notes remained in the working tree and are retained in this update.
+- Shared my broader AgentGuard vision: a security companion for Codex in VS Code
+  with a selected project, user policies, explanations and human decisions for
+  uncertain actions, and deferred records for skipped necessary work.
+- Agreed that proving a supported action can be intercepted before execution is
+  the next technical milestone. The direct model demo does not control an existing
+  Codex chat. No extension has been implemented yet.
+- The assistant structured my vision in docs/product_vision.md and updated the
+  README, working agreements, connection-scope notes, and roadmap. The brief
+  records trust boundaries, unresolved integration questions, and evidence needed
+  for alpha, beta, and a limited production release.
+- Saturday is now a proof-of-concept milestone for the larger product direction.
+  Timing estimates assume 8-12 focused hours weekly and remain provisional until
+  interception is demonstrated. This log preserves the earlier plan.
+- This checkpoint changes documentation only. The latest full application suite
+  remains 134 passing tests with none skipped; no live integration was installed.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

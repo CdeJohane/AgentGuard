@@ -6,6 +6,11 @@ This is a Python learning project for checking an AI agent's proposed actions.
 The learner knows Python and is new to agents. The project has an offline demo
 and an optional real model connection; all agent file operations are simulated.
 
+The product direction is AgentGuard, a security companion for Codex in VS Code.
+See `docs/product_vision.md` for intended workflow, scope, and release criteria.
+The direct model demo does not intercept an existing Codex conversation. Record
+integration coverage and enforcement evidence before claiming protection.
+
 - Work in small steps. Discuss each feature's expected behaviour before implementing it.
 - Explain unfamiliar agent concepts in plain language.
 - Agree meaningful pieces for the learner to write; preserve that ownership.

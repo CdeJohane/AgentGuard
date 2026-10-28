@@ -1,13 +1,16 @@
-# Flexible finish plan
+# Roadmap and Saturday milestone
 
-Finish target: Saturday morning, 31 October 2026. LinkedIn post planned for
-Monday morning, 2 November 2026 (Europe/London).
+Proof-of-concept milestone: Saturday morning, 31 October 2026. LinkedIn post
+planned for Monday morning, 2 November 2026 (Europe/London).
+The broader AgentGuard product continues beyond Saturday; its vision and
+provisional release estimates are in [product_vision.md](product_vision.md).
 
 Planning snapshot: 28 October 2026. Dates and proposed feature topics are subject to change.
 
 The first working milestone had twenty-six passing tests. The project now has
 134 passing tests and successful live model proposals through the guard. The
-remaining week is for focused improvements and release preparation.
+remaining week is for proving integration toward the newly clarified VS Code
+product direction. The existing Python prototype remains the verified baseline.
 The feature topics below are proposed; their behaviour will be discussed before
 implementation, with the same small-step pair-programming approach.
 
@@ -15,14 +18,14 @@ implementation, with the same small-step pair-programming approach.
 | --- | --- |
 | Monday, 26 October | Completed the model connection and three live permission checks, with 129 passing offline tests. |
 | Tuesday, 27 October | No session; the planned model connection had already been completed on Monday. |
-| Wednesday, 28 October | Completed operation-failure handling: the learner's reader handler passed review and all 134 tests pass. Documentation is updated; commit/push is next. |
-| Thursday, 29 October | Review any friend feedback, check fresh setup instructions, and address concrete gaps. |
-| Friday, 30 October | Freeze features, finish the code and documentation review, run release checks, and prepare the post draft. |
-| Saturday morning, 31 October | Final demo and test run, then verify the release checkpoint. |
+| Wednesday, 28 October | Completed operation-failure handling and setup review. Clarified the VS Code companion vision and recorded the revised scope and readiness criteria. |
+| Thursday, 29 October | Attempt a narrow interception proof in the intended VS Code/Codex workflow using dummy resources. Record supported paths and failure behaviour before choosing the adapter. |
+| Friday, 30 October | If interception works, demonstrate one covered action through the guard and review the slice. Otherwise document the blocker and preserve the working Python demo. Prepare an accurate progress-post draft. |
+| Saturday morning, 31 October | Demonstrate the verified scope, run applicable checks, and record achieved results and unresolved integration limits. |
 
 At the end of each session, review that session's changes, update the relevant
 documentation and learning log, and run checks appropriate to the changes. The
-final review happens after the last changes; daily checkpoints support it.
+review of each milestone happens after its last changes; daily checkpoints support it.
 The plan can adapt to progress and availability without adding features just
 to fill the remaining days.
 
@@ -47,9 +50,34 @@ completed the reader handler, and review confirmed the narrow OSError catch and
 suppressed exception context. All 134 tests pass with none skipped in the project
 environment. See the [walkthrough](walkthrough.md#seventh-exercise-completed-operation-failure).
 File operations remain simulated and the existing permission audit is preserved.
-Commit and push this passing feature before starting the next piece.
+The learner committed this feature as `951d823`; the working tree was clean
+before the setup review.
+
+Fresh-checkout verification used only committed files and a new environment
+without optional authentication packages. The offline demo produced one execution
+and three denials; the suite ran 134 tests, with 126 passing and the expected
+eight signed-token tests skipped. The temporary checkout and environment were
+removed. This verifies dependency-free setup; a fresh installation of the
+optional authentication packages was not repeated.
+The learner added environment activation to the README. Review corrected a path
+typo from `.venv` to `.\venv` to match the created folder. The assistant grouped
+environment creation, activation, dependency installation, and tests into one
+copyable block and shortened subsequent commands to `python`. This setup
+clarification was committed as `9892647`. Its setup-verification notes are
+retained in the current documentation update.
 The JSON decoding exercise is complete; see the
 [model connection notes](model_connection.md).
-Configurable permissions are deferred to keep the Saturday target manageable.
+The next phase depends on an interception proof. Selecting a project, configurable
+policies, human review, and deferred records are product requirements, not current
+capabilities. No live hooks or execution-policy changes have been installed by
+this documentation pass.
+
+Production readiness is a separate milestone after a useful alpha and controlled
+beta. The product brief assumes 8-12 focused hours weekly and gives provisional
+total elapsed ranges: personal alpha 4-8 weeks, controlled beta 2-4 months, and
+a limited production release 6-12+ months. These are estimates to revisit after
+the integration proof, not release promises. The release must demonstrate its
+enforcement boundaries, failure behaviour, privacy controls, and compatibility;
+the current 134 tests alone do not establish those broader guarantees.
 
 See the [README](../README.md) for the current project and the [learning log](learning_log.txt) for completed work.
