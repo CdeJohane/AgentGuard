@@ -20,7 +20,7 @@ implementation, with the same small-step pair-programming approach.
 | Monday, 26 October | Completed the model connection and three live permission checks, with 129 passing offline tests. |
 | Tuesday, 27 October | No session; the planned model connection had already been completed on Monday. |
 | Wednesday, 28 October | Completed operation-failure handling and setup review. Evening: completed/committed the responder; 144 tests pass. Verified control and one trusted project-hook denial in local VS Code with a matching receipt and no blocked marker. |
-| Thursday, 29 October | Record coverage and test failure behaviour in the disposable setup before choosing the next adapter step. |
+| Thursday, 29 October | Use the verified crash result to evaluate an independent enforcement boundary. Agree scope and remaining coverage/failure checks before extending the adapter. |
 | Friday, 30 October | Review the verified integration slice and its limits. Address concrete gaps and prepare an accurate progress-post draft. |
 | Saturday morning, 31 October | Demonstrate the verified scope, run applicable checks, and record achieved results and unresolved integration limits. |
 
@@ -89,3 +89,16 @@ or interception support by itself. The subsequent [live proof](interception_proo
 demonstrated one explicit denial at the disposable workspace root. Commit the
 recorded evidence, then agree the next failure/coverage checks before extending
 the adapter. The result supports only the tested action and scope.
+
+After committing that proof as `2c66319`, the learner agreed to an intentional
+hook-crash experiment. A separate inactive disposable fixture and a tracked
+deliberately broken script are prepared. A subprocess preflight verified receipt
+creation followed by unhandled exit 1; all 144 application tests still pass.
+The live control and crash result are independently verified. The crash hook
+was invoked for the exact planned command, but the target marker was created:
+fail-open behaviour for this case. The deliberately broken definition is now
+hooks.disabled.json, with evidence preserved. Close/reload that disposable
+VS Code window to discard cached configuration. See the
+[experiment record](interception_proof.md#intentional-crash-experiment-verified-fail-open).
+Record and commit the result, then evaluate supported enforcement outside the
+hook process. A successful explicit-denial test does not establish crash safety.

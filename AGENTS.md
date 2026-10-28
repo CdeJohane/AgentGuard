@@ -14,6 +14,8 @@ The direct model demo does not intercept an existing Codex conversation. Record
 integration coverage and enforcement evidence before claiming protection.
 One separate project-hook proof has blocked a shell call in local VS Code;
 see `docs/interception_proof.md` for its limited scope and evidence.
+A separate intentional-crash test allowed its command to execute after the hook
+failed. Do not claim fail-closed enforcement from this hook-only prototype.
 
 - Work in small steps. Discuss each feature's expected behaviour before implementing it.
 - Explain unfamiliar agent concepts in plain language.

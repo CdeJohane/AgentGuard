@@ -27,6 +27,10 @@ An AgentGuard-owned chat panel would require a separate product decision.
 - A trusted project hook blocked one shell call at a disposable workspace root
   in local VS Code. A successful control, exact matching receipt digest, absent
   target marker, and unchanged responder source independently support that proof.
+- A separate intentional-crash experiment verified fail-open behaviour: the hook
+  was invoked for the exact target command and the command created its marker
+  after the unhandled failure. A hook-only design has not met the desired
+  fail-closed requirement.
 
 There is no AgentGuard VS Code extension, approval queue, configurable policy,
 or product-wide durable decision history yet. Application file operations remain
@@ -92,8 +96,10 @@ Official sources checked on 28 October 2026:
 
 One harmless marker command has now been denied before its side effect in the
 intended local VS Code/Codex workflow; see the [proof record](interception_proof.md).
-Next, record coverage and test unavailable guard, timeout, changed arguments,
-and unavailable UI using dummy resources. Those failure cases remain unverified.
+The intentional-crash case is now measured: execution continued after the hook
+failed. Next, evaluate an independently enforced boundary, and test unavailable
+guard, timeout, changed arguments, and unavailable UI using dummy resources.
+Those other failure cases remain unverified.
 The product document itself does not authorize additional hooks or permission
 changes beyond the separately agreed disposable experiment.
 

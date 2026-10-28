@@ -10,6 +10,10 @@ Codex hook. One shell-call interception has been verified in a disposable local
 VS Code project; there is no AgentGuard VS Code extension yet. See the
 [product vision and release criteria](docs/product_vision.md).
 
+An intentional-crash experiment also showed that a command can run after the
+hook fails. This hook-based prototype does not currently provide fail-closed
+enforcement; the [proof record](docs/interception_proof.md) documents both outcomes.
+
 The demo uses simulated requests and pretend file contents. You can explore the
 permission flow without an AI account, API key, or real file access.
 
@@ -287,6 +291,8 @@ available. Details and
 the first parsing exercise are in the [connection notes](docs/model_connection.md).
 The [product vision](docs/product_vision.md) guides the next phase. A narrow
 pre-execution interception proof has succeeded in the local VS Code workflow.
-Failure behaviour and coverage need verification before relying on the adapter
-for configurable policies or human review. Saturday is a proof-of-concept
+The crash test demonstrated fail-open behaviour for one case: the hook ran and
+crashed, but the command still executed. An independently enforced boundary and
+further coverage testing are needed before relying on this design for protection.
+Saturday is a proof-of-concept
 milestone. Each feature's expected behaviour will be discussed before implementation.

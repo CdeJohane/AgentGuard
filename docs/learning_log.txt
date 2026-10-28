@@ -462,6 +462,48 @@ Next hands-on step:
   in this evidence update; the latest full suite remains 144 passing tests with
   none skipped in the project environment.
 - Next checkpoint: commit/push with message: Record verified Codex interception proof.
+- Committed and pushed the verified proof as 2c66319. Agreed to measure what
+  happens if the hook crashes, using a separate disposable project.
+- The assistant added tests/fixtures/crashing_hook.py: it records a minimal
+  invocation receipt, then deliberately raises an unhandled RuntimeError.
+  It is a failure-injection fixture, not a change to the real responder.
+- An isolated subprocess preflight confirmed the receipt and command digest,
+  no decision JSON, and process exit 1. The documented exit-2 block signal is
+  intentionally not used for the valid injected-crash case. No model was called.
+- A separate ignored project, .agent_guard/probe-workspaces/crash-4103da5c, is
+  prepared with an inactive hook definition. It has no live receipts or markers
+  yet, and the successful denial proof remains intact.
+- The full application suite still passes all 144 tests with none skipped.
+  Next: run the new control, review/trust the exact crash definition, then measure
+  the crash outcome using the tool result, receipt, and marker. The goal is to
+  learn whether this integration fails open or closed; no live result exists yet.
+- Ran the crash project's control and reported exit code 0 with no output.
+  Independent checks verified crash-baseline.txt and its expected contents,
+  absent target/receipt files, and the unchanged frozen script digest.
+- The assistant renamed only this project's pending definition to hooks.json
+  and recorded the verified control. Next: review/trust the crash-specific hook,
+  then request crash-marker.txt exactly once. Trust and the crash outcome remain
+  unverified; the separate successful blocking proof is unchanged.
+- Requested the crash target once. Codex reported command exit 0, no output,
+  and no hook error reported in the tool result.
+- Independent inspection found crash-marker.txt with the expected contents and
+  exactly one before_intentional_crash receipt matching the exact target command
+  digest. The frozen script still matched its verified unhandled-exit-1 source.
+  This demonstrates fail-open behaviour for this tested hook crash.
+- Learned that an explicit deny can work while a broken hook still lets a tool
+  call proceed. A guard callback alone is not the same as an independently
+  enforced security boundary. The normal responder's handled errors and this
+  unhandled-process failure are different cases.
+- The assistant saved crash-verification.json in the ignored fixture and renamed
+  only its deliberately broken definition to hooks.disabled.json. Evidence is
+  preserved; closing/reloading that disposable window clears cached config.
+  The successful denial proof and normal-project settings remain unchanged.
+- Updated the documentation to record both outcomes without claiming general
+  fail-closed protection. The latest full application suite remains 144 passing
+  tests with none skipped; this result came from a separate live experiment.
+- Next: commit/push the crash fixture and evidence notes with message:
+  Add crash probe and document fail-open behaviour. Then evaluate an independent
+  enforcement boundary before extending the product's policies or UI.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
