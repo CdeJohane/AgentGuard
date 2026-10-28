@@ -504,6 +504,53 @@ Next hands-on step:
 - Next: commit/push the crash fixture and evidence notes with message:
   Add crash probe and document fail-open behaviour. Then evaluate an independent
   enforcement boundary before extending the product's policies or UI.
+- Reloaded the disposable crash window, then committed/pushed the crash fixture
+  and measured fail-open result as 074ad00.
+- The assistant checked official native sandbox/permission-profile documentation
+  and the installed CLI's help as a candidate independent boundary. The actual
+  Windows command form differs from the cross-platform documentation example.
+- A correctly formed :read-only startup probe, requesting only a fixed output
+  message and including managed configuration, failed in the assistant's tool
+  terminal with CreateRestrictedToken error 87. The cause is unconfirmed; it did
+  not reach the command and is not an enforcement success or bypass result.
+- An ignored PowerShell helper is ready to repeat the diagnostic in my normal
+  VS Code terminal. No model request, saved-policy change, administrator setup,
+  or sandbox bypass was used. Next: report that terminal result before choosing
+  a dummy-write restriction test.
+- Ran the startup diagnostic from my normal terminal and received
+  AGENTGUARD_SANDBOX_READY. Native startup works in that context; the assistant's
+  earlier initialization error has no confirmed cause. No write restriction has
+  been verified by that startup message.
+- The assistant prepared a separate ignored native-77fa2a5c project with a frozen
+  native_boundary_probe.py and a run_check.py entry point. It compares the same
+  dummy writer directly, under requested :workspace, and under :read-only, with
+  managed configuration included. No hooks or model calls are involved.
+- The parent runner records started/denied tags, exit codes, and actual markers.
+  It requires both successful controls and a started writer reporting permission
+  denied before classifying read-only protection. Startup failures are inconclusive.
+- Four automated evidence/worker tests pass, bringing the full suite to 148 tests
+  with none skipped in the project environment. These do not run native sandbox
+  commands. Next: run the comparison in my normal terminal and inspect its actual
+  result before claiming an independent enforcement boundary.
+- Ran the native comparison and reported inconclusive_controls_not_verified.
+  Direct and :workspace writes exited 0 and created their markers, but the
+  verifier marked their contents as mismatched. The :read-only writer started,
+  reported permission denied, exited 13, and created no marker.
+- Independent inspection found correct control text with Windows CRLF newlines.
+  The assistant's byte comparison expected LF, causing the false mismatch.
+  Learned that Python text output can use platform line endings; text should be
+  verified consistently rather than assuming identical bytes across platforms.
+- The assistant added a CRLF regression test, observed it fail, then corrected
+  the tracked verifier to use universal-newline text comparison. Incorrect text
+  is still rejected. The full suite now passes all 149 tests with none skipped.
+- The original native-verification.json and frozen source are unchanged. A new
+  native-post-verification.json retains the correction and independent evidence.
+  Both controls are valid; the native read-only write denial is now post-verified.
+  The experiment was not rerun and its markers were not deleted.
+- This CLI comparison has no hooks. It supplies evidence for a native resource
+  boundary, but applying that boundary to the VS Code guard remains future work.
+- Next checkpoint: commit/push with message:
+  Verify native sandbox boundary and fix newline checks.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

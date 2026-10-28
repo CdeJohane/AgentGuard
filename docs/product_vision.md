@@ -22,7 +22,7 @@ An AgentGuard-owned chat panel would require a separate product decision.
 - Manually verified live allowed-read, forbidden-file, and forbidden-action cases.
 - The completed Python prototype checkpoint had 134 passing tests. The current
   [hook responder and receipt tests](interception_proof.md) expand the suite to
-  144 passing tests. Eight signed-token tests skip when optional authentication
+  149 passing tests, including evidence-classification and newline checks. Eight signed-token tests skip when optional authentication
   packages are absent.
 - A trusted project hook blocked one shell call at a disposable workspace root
   in local VS Code. A successful control, exact matching receipt digest, absent
@@ -31,6 +31,11 @@ An AgentGuard-owned chat panel would require a separate product decision.
   was invoked for the exact target command and the command created its marker
   after the unhandled failure. A hook-only design has not met the desired
   fail-closed requirement.
+- A native CLI comparison in the learner's normal terminal verified successful
+  direct/:workspace writes and a denied :read-only write with no target marker.
+  A Windows newline verification bug was corrected through independent
+  post-verification, preserving the original result and frozen source.
+  Applying this boundary in the VS Code/AgentGuard workflow is not implemented.
 
 There is no AgentGuard VS Code extension, approval queue, configurable policy,
 or product-wide durable decision history yet. Application file operations remain

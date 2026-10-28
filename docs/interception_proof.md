@@ -259,3 +259,107 @@ not address all process failures, timeouts, or uncovered tool paths. The next
 design step is to evaluate an independent enforcement boundary before adding
 broader policies or claiming protection. Normal execution permissions have not
 been changed as a workaround.
+
+## Independent boundary: native sandbox startup investigation
+
+After the crash result was committed as 074ad00, the assistant investigated
+native filesystem restrictions without changing saved configuration.
+[Permission profiles](https://learn.chatgpt.com/docs/permissions) describe local
+command access boundaries, including a built-in :read-only profile. These do
+not control every hosted, MCP, or browser tool path.
+
+The installed extension-bundled CLI's `sandbox --help` shows the native Windows
+form `codex sandbox --permission-profile <name> ... <command>`, rather than the
+cross-platform `sandbox windows` form in the documentation example. The initial
+documentation-form invocation failed, so it is not counted as an enforcement test.
+
+A correctly formed read-only startup probe then requested only a fixed message,
+using :read-only, --include-managed-config, and the disposable crash workspace.
+It failed inside the assistant's tool terminal with:
+
+```text
+windows sandbox failed: CreateRestrictedToken failed: 87
+```
+
+The command did not reach its expected AGENTGUARD_SANDBOX_READY output. This
+is an initialization failure, not evidence that a protected file was accessed
+or that the normal VS Code workflow cannot use native restrictions. Its cause
+is not established; no sandbox bypass or administrator setup was attempted.
+
+The ignored helper `.agent_guard/probe-workspaces/check-native-sandbox.ps1`
+repeats that startup diagnostic. It selects the same bundled executable,
+requests :read-only with managed configuration included, and runs PowerShell
+only to print the fixed tag. No model request is made and no saved policy is
+changed. The learner ran it from the normal integrated terminal and reported
+AGENTGUARD_SANDBOX_READY. That establishes startup worked in that context. The
+cause of the earlier assistant-terminal initialization failure remains unknown.
+No file-write enforcement claim follows from the readiness tag.
+
+## Native profile comparison: write denial post-verified
+
+The separate ignored project `.agent_guard/probe-workspaces/native-77fa2a5c/`
+contains a frozen copy of `tests/fixtures/native_boundary_probe.py`, a probe plan,
+and a run_check.py entry point selecting the same installed bundled Codex CLI.
+It is a fresh local Git project with no remote and no hook configuration.
+The test never invokes a model or changes saved permission settings.
+
+Run it once from the normal terminal. It uses the same fixed Python worker and
+dummy contents for three cases:
+
+| Case | Requested execution context | Expected evidence |
+| --- | --- | --- |
+| Direct control | Normal child process | Writer starts, exits 0, direct-marker.txt has expected contents |
+| Native writable control | :workspace with managed configuration included | Writer starts, exits 0, workspace-marker.txt has expected contents |
+| Native read-only attempt | :read-only with managed configuration included | Writer starts, reports PermissionError, exits nonzero, readonly-marker.txt absent |
+
+The worker can create only these fixed marker names. Existing artifacts cause
+the runner to refuse a repeat rather than delete or overwrite evidence. Each
+child has a 30-second timeout. A timeout, initialization failure, missing writer
+tag, or failed control is inconclusive. No raw child output is stored: the parent
+records recognized tags, exit codes, file observations, source digest, requested
+profiles, and Python version in native-verification.json.
+
+A write under the requested read-only profile is recorded as such, without
+calling it a sandbox escape: effective configuration would need investigation.
+This comparison has no hooks, so it tests a candidate native boundary separately;
+it does not yet configure or prove crash-safe enforcement in the VS Code chat.
+
+The first four automated checks cover false-denial classification, required
+successful controls, distinguishing outcomes, and the real worker's fixed-target
+write and rejection of an outside filename. A fifth regression test now covers
+Windows CRLF text, while still rejecting incorrect contents. All 149 project
+tests pass with none skipped. Native sandbox calls are not made by those tests.
+
+### Measured result and verifier correction
+
+The learner ran the comparison and returned an inconclusive_controls_not_verified
+status. Both direct and requested :workspace cases started the writer, exited 0,
+and created markers, but their marker_content_matches flags were false. The
+requested :read-only case started, reported permission denied, exited 13, and
+left no marker.
+
+Independent inspection established that the two control files contained exactly
+the expected text encoded with Windows CRLF newlines. The writer used text mode,
+while the original verifier compared against LF bytes. This was a verifier bug.
+Both controls pass universal-newline text comparison; the frozen source still
+matches its recorded digest, and the read-only marker remains absent.
+
+The tracked future-fixture verifier now uses text comparison. The regression
+test failed before that change and passed afterwards. The executed frozen copy
+and native-verification.json were preserved byte-for-byte. A separate ignored
+native-post-verification.json records the correction, original-record digest,
+verifier digest, file observations, and corrected classification:
+
+| Case | Independent post-verification |
+| --- | --- |
+| Direct control | Writer started, exit 0, expected control text |
+| Requested :workspace | Writer started, exit 0, expected control text |
+| Requested :read-only | Writer started, permission denied, exit 13, no marker |
+
+The corrected status is readonly_write_denied_observed. No native run was
+repeated and no artifacts were overwritten or deleted. This supports write
+denial for this requested native-profile comparison, independently of the hook.
+It does not establish protected reads, arbitrary command safety, all tool paths,
+or a fail-closed AgentGuard/VS Code integration. The next design step is applying
+appropriate resource restrictions to the actual workflow while retaining normal
+coding permissions.

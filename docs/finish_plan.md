@@ -9,7 +9,7 @@ Planning snapshot: 28 October 2026. Dates and proposed feature topics are subjec
 
 The first working milestone had twenty-six passing tests. The completed Python
 prototype had 134 passing tests and successful live model proposals through the guard.
-The completed hook responder and receipts bring the suite to 144 passing tests. The
+The hook responder, receipts, and native-evidence checks bring the suite to 149 passing tests. The
 remaining week is for proving integration toward the newly clarified VS Code
 product direction. The existing Python prototype remains the verified baseline.
 The feature topics below are proposed; their behaviour will be discussed before
@@ -102,3 +102,20 @@ VS Code window to discard cached configuration. See the
 [experiment record](interception_proof.md#intentional-crash-experiment-verified-fail-open).
 Record and commit the result, then evaluate supported enforcement outside the
 hook process. A successful explicit-denial test does not establish crash safety.
+
+Read-only native-sandbox investigation has begun. The installed CLI's help
+identified its actual Windows command form. A fixed-output startup probe with
+the built-in :read-only profile and managed configuration included failed with
+CreateRestrictedToken error 87 inside the assistant's tool terminal. The user's
+normal-terminal diagnostic succeeded with AGENTGUARD_SANDBOX_READY. No file-write
+enforcement result or cause for the earlier error is established. No saved
+configuration or sandbox permissions were changed.
+
+A separate direct/:workspace/:read-only marker comparison ran in the normal
+terminal. Independent post-verification confirmed successful controls and a
+denied read-only write. The initially inconclusive result came from a Windows
+newline verifier bug; its original record and frozen source are preserved.
+The fixed verifier and regression test bring the suite to 149 passing tests.
+The comparison has no hooks; applying native restrictions to the actual VS Code
+workflow is the next design question. See the
+[experiment record](interception_proof.md#native-profile-comparison-write-denial-post-verified).
