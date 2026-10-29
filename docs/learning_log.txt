@@ -639,6 +639,35 @@ Completed exercise: evaluate a project request
 - Next checkpoint: commit/push with message:
   Evaluate simulated requests with fixed project policy.
 - After that checkpoint, prepare the agreed offline policy-flow demonstration.
+- Committed the evaluator as 9b7d19e and reported pushing it.
+
+Completed exercise: demonstrate the offline policy flow
+
+- The assistant prepared policy_demo.py with four sample cases and display
+  formatting. Its loop connecting request evaluation to explanations and
+  display was left for me to implement.
+- Expected decisions: read notes.txt allows, read draft.txt requires review,
+  write notes.txt denies, and malformed input denies. No actions are executed;
+  no approval UI or audit records are created, changed, or cleared.
+- Only the project layer is implemented; the explanation helper receives a
+  one-element list containing its record, without fake global/language allows.
+- The assistant added two integration tests. The scaffold run found 168 tests:
+  all prior 166 pass and the two new tests intentionally encounter the exercise
+  exception. No tests were skipped.
+- Implemented the loop myself, evaluating each request, passing the result to
+  the explanation helper, and displaying the decision and explanation by index.
+- Initially every case denied because I passed a dictionary where the helper
+  required a list. The assistant located the mismatch; I fixed the call to
+  explain_decisions([result]). Learned the distinction between one record and
+  a list of records, and why input-shape validation rejected the wrong container.
+- The corrected demonstration printed ALLOW, REVIEW, DENY, DENY with the expected
+  project reasons. The full suite passes all 168 tests with none skipped.
+- Tests also verify repeated runs leave existing audit records intact and do
+  not call the executor or reader. The original guarded demo is preserved.
+- The assistant preserved my loop, tidied spacing, removed the exercise labels,
+  and updated the documentation. Today's agreed offline policy-flow scope is done.
+- Next checkpoint: commit/push with message:
+  Demonstrate explained project policy decisions offline.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

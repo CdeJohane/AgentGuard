@@ -26,13 +26,16 @@ An AgentGuard-owned chat panel would require a separate product decision.
   record for simulated requests. Only reading exactly notes.txt allows; other
   valid reads require review, and unsupported actions or malformed inputs deny.
   This is not connected to execution and does not supply global/language rules.
+- An offline policy-only demonstration connects that evaluator to the explanation
+  helper for four sample requests. It prints ALLOW/REVIEW/DENY/DENY without
+  executing actions, collecting approvals, or changing the execution audit.
 - A guarded executor, in-memory permission audit, and distinct execution failure.
 - An offline demo and a direct model-proposal demo using ChatGPT plan sign-in.
 - Manually verified live allowed-read, forbidden-file, and forbidden-action cases.
 - The completed Python prototype checkpoint had 134 passing tests. The current
-  suite has 166 passing tests, including the [hook and native-evidence
+  suite has 168 passing tests, including the [hook and native-evidence
   checks](interception_proof.md), 11 policy-combination/explanation tests, and six
-  project-rule tests. Eight
+  project-rule tests plus two policy-demo tests. Eight
   signed-token tests skip when optional authentication packages are absent.
 - A trusted project hook blocked one shell call at a disposable workspace root
   in local VS Code. A successful control, exact matching receipt digest, absent

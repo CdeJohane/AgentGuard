@@ -42,6 +42,17 @@ python -m unittest -v
 Run both commands from the repository root. `-m` runs a module within its package,
 so imports between the application modules resolve correctly.
 
+For the separate policy-only demonstration, run:
+
+```powershell
+python -m agent_guard.policy_demo
+```
+
+It evaluates a fixed project policy and explains ALLOW, REVIEW, DENY, and DENY
+for four samples. It executes no actions, requests no approvals, and leaves the
+existing audit unchanged. Only the project layer is evaluated. See the
+[policy-flow walkthrough](docs/walkthrough.md#eleventh-exercise-completed-demonstrate-the-offline-policy-flow).
+
 ## What the demo shows
 
 The guard uses default deny: only reading `notes.txt` is permitted.
@@ -152,7 +163,7 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication virtual environment, **all 166 tests pass**, with none
+In the authentication virtual environment, **all 168 tests pass**, with none
 skipped. The completed hook response builder, disposable fixture, and
 installed-version observations are in the [interception investigation](docs/interception_proof.md).
 The control marker write succeeded. After trusting the project hook, the blocked
@@ -174,6 +185,8 @@ unsupported actions or malformed requests deny. Its six tests pass. It is not
 connected to execution or approval prompts; the original demo retains its
 existing rules. See the
 [project-rule exercise](docs/walkthrough.md#tenth-exercise-completed-evaluate-a-project-request).
+Two policy-demo tests check evaluated explanations and confirm that repeated
+runs do not execute requests or change existing audit records.
 The completed pipeline tests verify allowed, forbidden, malformed,
 and structurally invalid proposals. Eight signed-token tests are skipped if the optional
 authentication dependency is absent. The signed-token tests use locally generated

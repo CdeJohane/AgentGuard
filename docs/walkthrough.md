@@ -378,3 +378,47 @@ exact path labels, malformed and blank inputs, untrusted permission claims, and
 unchanged request data. The full suite passes all 166 tests with none skipped in
 the project environment. The initial scaffold's exercise errors are resolved.
 Commit/push this passing checkpoint before adding the planned demonstration.
+
+## Eleventh exercise (completed): demonstrate the offline policy flow
+
+Completed on 29 October 2026 after clean commit `9b7d19e`, containing the
+project-rule evaluator. `agent_guard/policy_demo.py` demonstrates evaluation
+and explanations for reading notes.txt, reading draft.txt, writing notes.txt,
+and malformed input. Its expected decisions are allow, review, deny, deny.
+
+The assistant supplied four labeled sample cases, display formatting, imports,
+and two integration tests. The learner implemented the loop body:
+
+1. Call `evaluate_project_request(request)` to obtain a layer record.
+2. Put that record in a one-element list for `explain_decisions()`.
+3. Store the returned pair and access the decision and explanation by index.
+4. Pass the label, decision, and explanation to `display_decision()`.
+
+The first attempt passed the layer dictionary directly to `explain_decisions()`.
+Its list validation correctly returned a malformed-policy denial for every
+case. The assistant identified the input-shape mismatch, and the learner fixed
+the call to pass `[result]`, a list containing the project-layer dictionary.
+Indexing the returned pair is valid; unpacking it was an optional alternative.
+
+The list represents the one implemented project layer. Global and language
+policies have not been evaluated; do not invent allow decisions for them.
+The display uses ALLOW/REVIEW/DENY rather than execution statuses. This demo
+does not execute requests, access file contents, ask for approval, or change
+the existing audit. Even an ALLOW is only a policy decision here. The original
+guarded-execution demo remains `python -m agent_guard.simulate`.
+
+Run the focused tests and demonstration:
+
+```powershell
+python -m unittest tests.test_policy_demo -v
+python -m agent_guard.policy_demo
+```
+
+The full suite passes all 168 tests with none skipped in the project environment.
+The demonstration was run separately and printed ALLOW/REVIEW/DENY/DENY with
+the expected project reasons. The tests cover real evaluator/explanation output
+and ensure repeated demonstrations leave existing audit records intact without
+calling the executor or reader. The initial scaffold's errors and the subsequent
+list-shape bug are resolved. The assistant preserved the learner's working loop,
+tidied spacing, removed exercise labels, and updated these notes. This completes
+the agreed policy-flow demonstration and is ready for commit/push.
