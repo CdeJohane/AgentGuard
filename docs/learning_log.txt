@@ -553,6 +553,38 @@ Next hands-on step:
   Verify native sandbox boundary and fix newline checks.
 
 --------------------------------------------------------------------------
+29 October 2026
+
+Completed exercise: combining policy-layer decisions
+
+- Resumed from clean commit 2279730 after reporting the native-boundary
+  checkpoint committed and pushed.
+- Proposed global, language/toolchain, and project rules in the previous
+  discussion. Distinguished blocking rules, approval requirements, and advice.
+- The assistant prepared an isolated combine_decisions() exercise, validation,
+  examples, and five tests. The decision-combination logic was left for me
+  to implement as the exercise.
+- Expected behaviour: any deny wins; otherwise any review pauses the action;
+  all-allow input permits it. Empty input requires review, and malformed input
+  is denied. Review does not itself grant permission or implement an approval UI.
+- The full scaffold check ran 154 tests with no skips. The previous 149 tests
+  and new validation test pass; four exercise methods intentionally encounter
+  NotImplementedError (13 errors across their cases).
+- The exercise is not connected to the executor or Codex. Native enforcement
+  in the existing VS Code chat is still future integration work.
+- Implemented the decision logic myself using membership checks: deny first,
+  then review or an empty list, otherwise allow. Review found the implementation
+  correct, including decisions == [] for empty input; no logic changes needed.
+- Learned that layer order must not override a denial, and that review keeps
+  an action blocked rather than granting permission. Nonempty strings such as
+  "deny" are truthy, so later execution must check explicitly for "allow".
+- All five focused tests and the full 154-test suite now pass with none skipped.
+  The initial exercise errors are resolved. The assistant removed the scaffold
+  labels and updated the documentation, preserving my decision logic.
+- Next checkpoint: commit/push with message:
+  Add policy decision combination with deny priority.
+
+--------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
 
 Date:

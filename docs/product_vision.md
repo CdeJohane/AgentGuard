@@ -17,13 +17,16 @@ An AgentGuard-owned chat panel would require a separate product decision.
 ## Implemented today
 
 - A Python policy prototype permitting only a simulated read of notes.txt.
+- A standalone policy-combination helper: deny wins over review, then allow;
+  empty input requires review and malformed input is denied. It does not yet
+  evaluate layer rules or connect to the guarded executor or an approval UI.
 - A guarded executor, in-memory permission audit, and distinct execution failure.
 - An offline demo and a direct model-proposal demo using ChatGPT plan sign-in.
 - Manually verified live allowed-read, forbidden-file, and forbidden-action cases.
 - The completed Python prototype checkpoint had 134 passing tests. The current
-  [hook responder and receipt tests](interception_proof.md) expand the suite to
-  149 passing tests, including evidence-classification and newline checks. Eight signed-token tests skip when optional authentication
-  packages are absent.
+  suite has 154 passing tests, including the [hook and native-evidence
+  checks](interception_proof.md) and five policy-combination tests. Eight
+  signed-token tests skip when optional authentication packages are absent.
 - A trusted project hook blocked one shell call at a disposable workspace root
   in local VS Code. A successful control, exact matching receipt digest, absent
   target marker, and unchanged responder source independently support that proof.

@@ -239,3 +239,44 @@ as read failures and that an audit error prevents the reader from running.
 The normal simulated reader always returns pretend contents; running the usual
 demo alone will not trigger this error. The full suite has passed and the notes
 are updated; this completed feature is ready for the learner's commit/push.
+
+## Eighth exercise (completed): combine policy decisions
+
+Completed on 29 October 2026, following the learner's proposed global,
+language/toolchain, and project policy layers. This exercise combines decisions
+already made by applicable layers; it does not implement their rules, select
+which layers apply, show approval prompts, or connect to Codex or the executor.
+
+The assistant supplied input validation in `agent_guard/policy.py` and five
+tests in `tests/test_policy.py`. The learner implemented the combination logic
+in `combine_decisions()`: checking for deny first, then review or an empty list,
+and returning allow otherwise. Review confirmed the condition order and the
+explicit `decisions == []` check; no logic corrections were necessary.
+
+| Input | Result |
+| --- | --- |
+| `["allow", "allow", "allow"]` | `"allow"` |
+| `["deny", "allow", "review"]` | `"deny"` |
+| `["allow", "review", "allow"]` | `"review"` |
+| `[]` | `"review"` |
+| Malformed input or an unknown decision | `"deny"` (already supplied) |
+
+Check for any denial before checking for review, regardless of layer order.
+No decisions requires review; otherwise, only all-allow input can return allow.
+Only `allow` would permit execution. `review` means keep the action blocked
+pending a human decision; this function does not collect that decision.
+These strings are separate from the existing guard's `(bool, reason)` result.
+Do not wire them into execution by relying on string truthiness: even `"deny"`
+is a truthy Python string.
+
+```powershell
+python -m unittest tests.test_policy -v
+```
+
+All five focused tests pass. The tests check denial priority across all orders
+of allow/review/deny, review priority, all-allow input, empty input, and malformed
+values. The full suite passes all 154 tests with none skipped in the project
+environment. The initial scaffold's deliberate exercise errors are resolved.
+The helper remains separate from request evaluation and execution; there is no
+new approval UI or VS Code enforcement integration. This is a passing checkpoint
+for the learner to commit and push.

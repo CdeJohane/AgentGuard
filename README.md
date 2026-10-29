@@ -152,7 +152,7 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication virtual environment, **all 149 tests pass**, with none
+In the authentication virtual environment, **all 154 tests pass**, with none
 skipped. The completed hook response builder, disposable fixture, and
 installed-version observations are in the [interception investigation](docs/interception_proof.md).
 The control marker write succeeded. After trusting the project hook, the blocked
@@ -163,6 +163,10 @@ The additional native-boundary checks validate evidence classification, Windows
 text newlines, and a dummy writer offline. A separate manual comparison verified
 direct and writable-sandbox writes while the requested read-only sandbox denied
 its write. That CLI result is not yet integrated into the VS Code guard workflow.
+An isolated policy-combination helper gives deny priority over review and allow,
+and requires review for empty input. Its five tests pass; it is not yet connected
+to the executor or a configurable policy. See the
+[completed exercise](docs/walkthrough.md#eighth-exercise-completed-combine-policy-decisions).
 The completed pipeline tests verify allowed, forbidden, malformed,
 and structurally invalid proposals. Eight signed-token tests are skipped if the optional
 authentication dependency is absent. The signed-token tests use locally generated

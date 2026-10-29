@@ -5,11 +5,12 @@ planned for Monday morning, 2 November 2026 (Europe/London).
 The broader AgentGuard product continues beyond Saturday; its vision and
 provisional release estimates are in [product_vision.md](product_vision.md).
 
-Planning snapshot: 28 October 2026. Dates and proposed feature topics are subject to change.
+Planning snapshot: 29 October 2026. Dates and proposed feature topics are subject to change.
 
 The first working milestone had twenty-six passing tests. The completed Python
 prototype had 134 passing tests and successful live model proposals through the guard.
-The hook responder, receipts, and native-evidence checks bring the suite to 149 passing tests. The
+The hook responder, receipts, native-evidence checks, and policy-combination
+helper bring the suite to 154 passing tests. The
 remaining week is for proving integration toward the newly clarified VS Code
 product direction. The existing Python prototype remains the verified baseline.
 The feature topics below are proposed; their behaviour will be discussed before
@@ -20,7 +21,7 @@ implementation, with the same small-step pair-programming approach.
 | Monday, 26 October | Completed the model connection and three live permission checks, with 129 passing offline tests. |
 | Tuesday, 27 October | No session; the planned model connection had already been completed on Monday. |
 | Wednesday, 28 October | Completed operation-failure handling and setup review. Evening: completed/committed the responder; 144 tests pass. Verified control and one trusted project-hook denial in local VS Code with a matching receipt and no blocked marker. |
-| Thursday, 29 October | Use the verified crash result to evaluate an independent enforcement boundary. Agree scope and remaining coverage/failure checks before extending the adapter. |
+| Thursday, 29 October | Completed the isolated policy-combination exercise; all 154 tests pass. Native CLI write restriction is verified separately; native enforcement in the VS Code workflow remains unresolved. |
 | Friday, 30 October | Review the verified integration slice and its limits. Address concrete gaps and prepare an accurate progress-post draft. |
 | Saturday morning, 31 October | Demonstrate the verified scope, run applicable checks, and record achieved results and unresolved integration limits. |
 
@@ -119,3 +120,12 @@ The fixed verifier and regression test bring the suite to 149 passing tests.
 The comparison has no hooks; applying native restrictions to the actual VS Code
 workflow is the next design question. See the
 [experiment record](interception_proof.md#native-profile-comparison-write-denial-post-verified).
+
+29 October exercise completed: `combine_decisions()` combines applicable
+layer decisions with deny taking priority over review, then allow. Empty input
+requires review; malformed input is denied. The assistant supplied validation
+and tests; the learner implemented the combination logic correctly. This is an
+isolated policy helper, not an enforcement integration. All five focused tests
+and the full 154-test suite pass, with no skips. Next: commit/push this checkpoint
+before agreeing another feature. See the
+[exercise review](walkthrough.md#eighth-exercise-completed-combine-policy-decisions).
