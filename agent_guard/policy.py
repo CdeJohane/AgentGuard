@@ -1,4 +1,4 @@
-"""Combine policy decisions; not connected to the guard or executor yet."""
+"""Combine and explain policy decisions for policy demos and project execution."""
 
 
 def combine_decisions(decisions: object) -> str:

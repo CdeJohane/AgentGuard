@@ -7,6 +7,8 @@ Start with the [project README](../README.md) for setup and the demo. Personal p
 These exercises record the evolving implementation. The executor's former tuple
 result in earlier exercises was replaced by the dictionary in the
 [completed twelfth exercise](#twelfth-exercise-completed-structured-execution-results).
+The optional project-policy execution mode is the completed thirteenth exercise;
+default execution and the existing demonstrations retain their original policy.
 
 ## First exercise (completed): permissions
 
@@ -476,3 +478,45 @@ execution, three denials, and four audit records; the policy-only demo retains
 ALLOW/REVIEW/DENY/DENY without execution. The optional model orchestration is
 covered by fake-service tests; no new live model request was made.
 Commit/push this checkpoint before the separate policy-to-execution integration.
+
+## Thirteenth exercise (completed): execute with an explicit project policy
+
+Completed on 29 October 2026 after clean commit `a345281`, containing the completed
+structured results. The learner agreed to project-policy execution as the next
+checkpoint. `execute_request(request, use_project_policy=True)` explicitly selects
+the fixed project evaluator and explanation helper. Omitting the keyword retains
+the original guard; request fields cannot select the mode.
+
+The assistant supplied mode selection, reuse of the evaluator and explanation
+helper, audit wiring, and nine tests. The learner implemented both edits in executor.py:
+
+1. `_allows_execution()` uses a conditional expression to return True only for
+   exactly `"allow"`, and False otherwise. Nonempty strings are truthy, so the
+   explicit comparison is necessary rather than testing string truthiness.
+2. Both result dictionaries preserve the calculated `decision`. Review and
+   deny return executed False, but remain different decisions. The successful
+   result also preserves the decision; that change is correct.
+
+Review preserved the learner's implementation. The existing reader and safe
+OSError handling remain. The
+audit receives exactly one record before an allowed read. Review and deny both
+record allowed False with their policy reason. The existing audit has no separate
+decision field; the returned result retains the explicit review/deny distinction.
+This exercise does not add a durable review queue or approval interface.
+
+Only the project layer is evaluated in project mode. Reading notes.txt allows;
+other valid read labels require review and do not execute. Paths are simulated
+labels, with no real filesystem protection implied. Default model/demo callers
+continue using their original policy.
+
+```powershell
+python -m unittest tests.test_project_execution -v
+```
+
+All nine focused tests and the full 177-test suite pass with none skipped in
+the project environment. The eight initial exercise errors are resolved.
+A direct four-case project-mode check returned allow/executed True, review/False,
+deny/False, and deny/False, with four audit records. Default demo behaviour is
+also covered by the passing suite. The assistant removed exercise labels and
+updated the documentation without changing the learner's logic. This completes
+the two agreed extra checkpoints and is ready for commit/push.

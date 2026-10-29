@@ -701,6 +701,33 @@ Completed exercise: structured execution results
   Separate permission decisions from execution results.
 - After this checkpoint, connect project-policy review to simulated execution
   as the separate agreed next feature.
+- Committed structured execution results as a345281 and reported pushing it.
+
+Completed exercise: explicit project-policy execution
+
+- Began the agreed integration using execute_request(..., use_project_policy=True).
+  The option belongs to calling code; model request fields cannot choose it.
+  Omitting the keyword keeps the original guard and demonstrations available.
+- The assistant supplied mode selection, policy evaluation/explanations, audit
+  wiring, and nine tests. The exact-allow boolean gate and preserving the actual
+  decision in the blocked result were left for me to implement.
+- Review and deny both keep executed False and audit allowed False with a policy
+  reason. The result distinguishes review from deny; no new audit decision field,
+  approval interface, or durable queue is added.
+- The scaffold run found 177 tests: all prior 168 and the new request-cannot-select-
+  mode test pass, with eight expected gate-placeholder errors and no other errors,
+  assertion failures, or skipped tests.
+- Implemented the gate myself using True if decision == "allow" else False.
+  Preserved the actual decision in both result dictionaries so review stays
+  review. Review confirmed both edits; the assistant kept my logic.
+- All nine focused tests and the full 177-test suite pass with none skipped.
+  The eight initial exercise errors are resolved. A direct four-case check
+  verified allow/executed True, review/False, deny/False, deny/False, and exactly
+  four audit records. File operations remain simulated.
+- The assistant removed exercise labels and updated the docs. The agreed extra
+  result-format and project-execution checkpoints are both completed.
+- Next checkpoint: commit/push with message:
+  Enforce project policy decisions in simulated execution.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

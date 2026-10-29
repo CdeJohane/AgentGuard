@@ -122,6 +122,23 @@ returns `"allow"`, `True`, and simulated contents; a denial returns `"deny"`,
 `is_allowed()` remains a boolean-only wrapper around `check_request()`. See the
 [structured-result exercise](docs/walkthrough.md#twelfth-exercise-completed-structured-execution-results).
 
+Calling code can explicitly select the fixed project policy:
+
+```python
+from agent_guard.executor import execute_request
+
+result = execute_request(
+    {"action": "read", "path": "draft.txt"}, use_project_policy=True,
+)
+# {"decision": "review", "executed": False, "message": "project: File requires review."}
+```
+
+Only `"allow"` reaches the simulated reader. Review and denial remain separate
+results, both with `executed=False`. Each attempt is audited once; both blocked
+decisions record `allowed=False` and their policy reason. This option adds no
+approval prompt. Existing demos and model callers use the original guard by
+default; fields inside a request cannot enable the option.
+
 ## Code map
 
 | File or directory | Responsibility |
@@ -166,8 +183,12 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication environment, **all 168 tests pass**, with none skipped.
+In the authentication environment, **all 177 tests pass**, with none skipped.
 Structured-result checks preserve the previous demo output and audit behaviour.
+Nine project-execution tests verify the exact-allow gate, blocked review/denial,
+audit-before-read, safe failures, malformed policy records, and trusted mode
+selection. Existing default execution and both offline demos remain available.
+See the [completed exercise](docs/walkthrough.md#thirteenth-exercise-completed-execute-with-an-explicit-project-policy).
 The completed hook response builder, disposable fixture, and
 installed-version observations are in the [interception investigation](docs/interception_proof.md).
 The control marker write succeeded. After trusting the project hook, the blocked
@@ -178,16 +199,16 @@ The additional native-boundary checks validate evidence classification, Windows
 text newlines, and a dummy writer offline. A separate manual comparison verified
 direct and writable-sandbox writes while the requested read-only sandbox denied
 its write. That CLI result is not yet integrated into the VS Code guard workflow.
-Isolated policy helpers give deny priority over review and allow, require review
+Policy helpers give deny priority over review and allow, require review
 for empty input, and explain the contributing layers and their reasons. All 11
-policy tests pass; these helpers are not yet connected to the executor or a
-configurable policy. See the
+policy tests pass; the explanation helper is used by optional project-mode
+execution. Policy configuration and approval prompts remain future work. See the
 [completed explanation exercise](docs/walkthrough.md#ninth-exercise-completed-explain-policy-decisions).
 A separate fixed project-policy evaluator produces a layer record from a
 simulated request: read notes.txt allows, other valid reads require review, and
-unsupported actions or malformed requests deny. Its six tests pass. It is not
-connected to execution or approval prompts; the original demo retains its
-existing rules. See the
+unsupported actions or malformed requests deny. Its six tests pass. Optional
+project-mode execution uses it; the original demo retains its existing rules.
+See the
 [project-rule exercise](docs/walkthrough.md#tenth-exercise-completed-evaluate-a-project-request).
 Two policy-demo tests check evaluated explanations and confirm that repeated
 runs do not execute requests or change existing audit records.

@@ -1,4 +1,4 @@
-"""Fixed project rules for simulated requests; not connected to execution."""
+"""Fixed project rules for simulated requests, selected explicitly by callers."""
 
 from agent_guard.guard import is_valid_request
 

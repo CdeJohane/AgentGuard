@@ -17,15 +17,15 @@ An AgentGuard-owned chat panel would require a separate product decision.
 ## Implemented today
 
 - A Python policy prototype permitting only a simulated read of notes.txt.
-- Standalone policy combination and explanation helpers: deny wins over review,
+- Policy combination and explanation helpers: deny wins over review,
   then allow; empty input requires review and malformed input is denied. The
   explanation includes the contributing layers and their policy-authored reasons.
-  These helpers do not yet evaluate layer rules or connect to the guarded
-  executor or an approval UI.
+  The explanation helper supports optional project-mode execution; these helpers
+  do not themselves evaluate rules or collect approvals.
 - A separate fixed project-rule evaluator produces an allow/review/deny layer
   record for simulated requests. Only reading exactly notes.txt allows; other
   valid reads require review, and unsupported actions or malformed inputs deny.
-  This is not connected to execution and does not supply global/language rules.
+  Explicit project-mode execution uses it; it does not supply global/language rules.
 - An offline policy-only demonstration connects that evaluator to the explanation
   helper for four sample requests. It prints ALLOW/REVIEW/DENY/DENY without
   executing actions, collecting approvals, or changing the execution audit.
@@ -34,13 +34,16 @@ An AgentGuard-owned chat panel would require a separate product decision.
 - An offline demo and a direct model-proposal demo using ChatGPT plan sign-in.
 - Manually verified live allowed-read, forbidden-file, and forbidden-action cases.
 - The completed Python prototype checkpoint had 134 passing tests. The current
-  suite has 168 passing tests, including the [hook and native-evidence
+  suite has 177 passing tests, including the [hook and native-evidence
   checks](interception_proof.md), 11 policy-combination/explanation tests, and six
-  project-rule tests plus two policy-demo tests. Eight
+  project-rule tests, two policy-demo tests, and nine project-execution tests. Eight
   signed-token tests skip when optional authentication packages are absent.
-- The completed structured-result refactor preserves both offline demos and
-  passes the full suite. It prepares a separate policy-to-execution checkpoint;
-  project-policy review is not connected to execution yet.
+- Completed structured results and optional project-mode execution preserve
+  both offline demos. Calling code explicitly selects the mode; model request
+  fields cannot select it. Only allow reaches the simulated reader; review/deny
+  remain distinct blocked results and are each audited once with allowed False.
+  The existing audit has no separate policy-decision field. Default execution
+  retains its previous behaviour; no approval UI or VS Code enforcement is added.
 - A trusted project hook blocked one shell call at a disposable workspace root
   in local VS Code. A successful control, exact matching receipt digest, absent
   target marker, and unchanged responder source independently support that proof.
