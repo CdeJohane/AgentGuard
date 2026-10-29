@@ -583,6 +583,32 @@ Completed exercise: combining policy-layer decisions
   labels and updated the documentation, preserving my decision logic.
 - Next checkpoint: commit/push with message:
   Add policy decision combination with deny priority.
+- Committed the combination helper as 159962f and reported pushing it.
+
+Completed exercise: explaining policy decisions
+
+- Agreed to explain which layer contributed a decision and why. If multiple
+  layers give the final decision, include all their reasons in input order.
+- The assistant added explain_decisions() validation, empty-input handling,
+  reuse of my combine_decisions(), and six tests. The explanation loop,
+  filtering, formatting, and returning the final pair were left for me.
+- Records contain layer, decision, and reason. Reasons should come from the
+  policy, without credentials or file contents; the helper is not a sanitizer.
+- The scaffold suite ran 160 tests with no skips: all prior 154 plus the two
+  new validation/empty-input tests pass; four new tests intentionally encounter
+  the marked NotImplementedError. There are no other failures.
+- No real rules, approval prompts, or execution integration were added.
+- Implemented the explanation block myself using an empty string and a loop.
+  I select records matching the final decision, add the layer and reason, and
+  put semicolons between subsequent explanations. I return (decision, my_str).
+- Review confirmed correct filtering, order, formatting, and unchanged inputs.
+  Building the string directly is valid; using a list and join() was optional.
+  The assistant preserved my logic and removed the unfinished exercise labels.
+- All 11 focused policy tests and the full 160-test suite pass with none skipped.
+  The four initial exercise errors are resolved. Documentation is updated;
+  actual rule evaluation and enforcement integration remain future work.
+- Next checkpoint: commit/push with message:
+  Explain policy decisions with contributing layer reasons.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

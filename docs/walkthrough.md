@@ -280,3 +280,55 @@ environment. The initial scaffold's deliberate exercise errors are resolved.
 The helper remains separate from request evaluation and execution; there is no
 new approval UI or VS Code enforcement integration. This is a passing checkpoint
 for the learner to commit and push.
+
+## Ninth exercise (completed): explain policy decisions
+
+Completed on 29 October 2026 after the learner committed the combination helper
+as `159962f` and reported pushing it. The next helper, `explain_decisions()` in
+`agent_guard/policy.py`, accepts a list of records rather than bare strings:
+
+```python
+[
+    {"layer": "global", "decision": "allow", "reason": "Within global limits"},
+    {"layer": "language", "decision": "review", "reason": "Package approval required"},
+]
+```
+
+It returns `(decision, explanation)`, for example:
+`("review", "language: Package approval required")`.
+Layer labels and reasons must be nonblank strings; decision must be exactly
+allow, deny, or review. This helper accepts supplied layer labels; it does not
+verify that every required policy layer is present or evaluate real rules.
+
+The assistant supplied validation, empty-input handling, a call to the learner's
+existing combining function, and six tests. Malformed input returns a fixed
+denial without echoing its values; empty input returns a fixed review reason.
+Reasons must be policy-authored explanations, not commands, credentials, or
+file contents. Valid strings are not automatically sanitized for secrets.
+
+The learner implemented the explanation block:
+
+1. Start an empty string, `my_str`.
+2. Iterate over the supplied records without modifying them.
+3. Keep records whose decision equals the final `decision` already calculated.
+4. Format each as `layer: reason`, keeping input order.
+5. Add `"; "` before each subsequent matching reason and return the pair.
+
+This direct string-building approach meets the behaviour. The initially
+suggested list plus `join()` was an alternative, not a requirement; review
+preserved the learner's implementation without logic changes.
+
+If two layers deny, include both denial reasons; omit lower-priority allow or
+review reasons. If the final decision is allow, include all allowing reasons.
+This is a plain text summary, not an approval prompt, audit record, or executor
+integration. Review continues to mean no permission to execute yet.
+
+```powershell
+python -m unittest tests.test_policy -v
+```
+
+All 11 policy tests pass, including the six new explanation tests. The full
+suite passes all 160 tests with none skipped in the project environment. The
+initial scaffold's four deliberate errors are resolved. No integration with
+actual layer rules, approvals, auditing, or execution has been added. This is
+a passing checkpoint for the learner to commit and push.
