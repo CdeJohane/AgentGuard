@@ -4,9 +4,9 @@ from .audit import audit_log
 from .executor import OperationError, execute_request
 
 
-def display_result(request: object, allowed: bool, message: str) -> None:
+def display_result(request: object, executed: bool, message: str) -> None:
     """Display simulated contents on success or the reason for denial."""
-    status = "EXECUTED" if allowed else "DENIED"
+    status = "EXECUTED" if executed else "DENIED"
     print(f"{status}: {request!r}")
     print(f"  {message}")
 
@@ -30,8 +30,8 @@ def main() -> None:
     print("Simulated requests only; no files will be accessed.\n")
     for request in requests:
         try:
-            decision, msg = execute_request(request)
-            display_result(request, decision, msg)
+            result = execute_request(request)
+            display_result(request, result["executed"] is True, result["message"])
         except OperationError as error:
             print(f"FAILED: {request!r}")
             print(f"  {error}")

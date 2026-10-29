@@ -35,9 +35,9 @@ def main(argv=None) -> int:
         print(f"Model: {selected.display_name!r} ({selected.slug!r})")
         text = client.propose(args.instruction, selected.slug)
         print(f"Completed model proposal: {text!r}")
-        allowed, message = execute_model_response(text)
-        print("EXECUTED" if allowed else "DENIED")
-        print(f"  {message}")
+        result = execute_model_response(text)
+        print("EXECUTED" if result["executed"] is True else "DENIED")
+        print(f"  {result['message']}")
         display_audit_log()
         return 0
     except KeyboardInterrupt:

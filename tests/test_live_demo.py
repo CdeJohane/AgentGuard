@@ -35,7 +35,9 @@ class LiveDemoTests(unittest.TestCase):
                 client = factory.return_value
                 client.list_models.return_value = [ModelChoice("first", "First model")]
                 client.propose.return_value = '{"action":"write","path":"notes.txt"}'
-                pipeline.return_value = (False, "Action is not permitted.")
+                pipeline.return_value = {
+                    "decision": "deny", "executed": False, "message": "Action is not permitted.",
+                }
                 output = StringIO()
                 with redirect_stdout(output):
                     self.assertEqual(main(["Write notes.txt"]), 0)

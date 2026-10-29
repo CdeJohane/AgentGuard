@@ -1,4 +1,7 @@
-"""Execution tests: python -m unittest tests.test_executor -v"""
+"""Verify structured execution results, permission checks, and safe failures.
+
+Run with: python -m unittest tests.test_executor -v
+"""
 
 import traceback
 import unittest
@@ -20,21 +23,27 @@ class ExecutionTests(unittest.TestCase):
         with patch("agent_guard.executor.simulated_read", return_value="Contents from reader") as reader:
             result = execute_request(request)
             reader.assert_called_once_with("notes.txt")
-            self.assertEqual(result, (True, "Contents from reader"))
+            self.assertEqual(result, {
+                "decision": "allow", "executed": True, "message": "Contents from reader",
+            })
 
     def test_forbidden_action_never_calls_reader(self):
         request = {"action": "write", "path": "notes.txt"}
         with patch("agent_guard.executor.simulated_read") as reader:
             result = execute_request(request)
             reader.assert_not_called()
-            self.assertEqual(result, (False, "Action is not permitted."))
+            self.assertEqual(result, {
+                "decision": "deny", "executed": False, "message": "Action is not permitted.",
+            })
 
     def test_forbidden_path_never_calls_reader(self):
         request = {"action": "read", "path": "secrets.txt"}
         with patch("agent_guard.executor.simulated_read") as reader:
             result = execute_request(request)
             reader.assert_not_called()
-            self.assertEqual(result, (False, "File is not permitted."))
+            self.assertEqual(result, {
+                "decision": "deny", "executed": False, "message": "File is not permitted.",
+            })
 
     def test_malformed_requests_never_call_reader(self):
         requests = [
@@ -49,7 +58,9 @@ class ExecutionTests(unittest.TestCase):
             with patch("agent_guard.executor.simulated_read") as reader:
                 result = execute_request(request)
                 reader.assert_not_called()
-                self.assertEqual(result, (False, "Malformed request."))
+                self.assertEqual(result, {
+                    "decision": "deny", "executed": False, "message": "Malformed request.",
+                })
 
     def test_reader_oserror_becomes_safe_failure_with_one_allowed_audit_record(self):
         request = {"action": "read", "path": "notes.txt"}

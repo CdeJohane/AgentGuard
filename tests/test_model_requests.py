@@ -46,7 +46,9 @@ class ModelRequestTests(unittest.TestCase):
             request = parse_model_request("This is not JSON.")
             result = execute_request(request)
             reader.assert_not_called()
-        self.assertEqual(result, (False, "Malformed request."))
+        self.assertEqual(result, {
+            "decision": "deny", "executed": False, "message": "Malformed request.",
+        })
         self.assertEqual(audit_log, [{
             "action": None, "path": None, "allowed": False,
             "reason": "Malformed request.",
@@ -57,7 +59,9 @@ class ModelRequestTests(unittest.TestCase):
         with patch("agent_guard.executor.simulated_read") as reader:
             result = execute_request(parse_model_request(text))
             reader.assert_not_called()
-        self.assertEqual(result, (False, "Action is not permitted."))
+        self.assertEqual(result, {
+            "decision": "deny", "executed": False, "message": "Action is not permitted.",
+        })
         self.assertEqual(audit_log, [{
             "action": "write", "path": "notes.txt", "allowed": False,
             "reason": "Action is not permitted.",

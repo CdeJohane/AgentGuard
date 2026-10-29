@@ -115,9 +115,12 @@ flowchart TD
 4. **Execute:** only permitted requests reach the reader. Denied requests return
    their reason without calling it.
 
-`check_request()` returns `(allowed, reason)`. `execute_request()` returns
-`(True, contents)` on success or `(False, reason)` on denial. `is_allowed()` is a
-boolean-only wrapper around `check_request()`.
+`check_request()` returns `(allowed, reason)`. `execute_request()` returns a
+dictionary with `decision`, `executed`, and `message` fields: an allowed read
+returns `"allow"`, `True`, and simulated contents; a denial returns `"deny"`,
+`False`, and its permission reason. Reader failures still raise `OperationError`.
+`is_allowed()` remains a boolean-only wrapper around `check_request()`. See the
+[structured-result exercise](docs/walkthrough.md#twelfth-exercise-completed-structured-execution-results).
 
 ## Code map
 
@@ -163,8 +166,9 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication virtual environment, **all 168 tests pass**, with none
-skipped. The completed hook response builder, disposable fixture, and
+In the authentication environment, **all 168 tests pass**, with none skipped.
+Structured-result checks preserve the previous demo output and audit behaviour.
+The completed hook response builder, disposable fixture, and
 installed-version observations are in the [interception investigation](docs/interception_proof.md).
 The control marker write succeeded. After trusting the project hook, the blocked
 command produced one matching denial receipt and no target file. This verifies

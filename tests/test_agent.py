@@ -17,7 +17,9 @@ class AgentPipelineTests(unittest.TestCase):
     def test_allowed_proposal_reaches_the_reader_and_is_audited_once(self):
         with patch("agent_guard.executor.simulated_read", return_value="Pretend notes") as reader:
             result = execute_model_response('{"action":"read","path":"notes.txt"}')
-        self.assertEqual(result, (True, "Pretend notes"))
+        self.assertEqual(result, {
+            "decision": "allow", "executed": True, "message": "Pretend notes",
+        })
         reader.assert_called_once_with("notes.txt")
         self.assertEqual(audit_log, [{
             "action": "read", "path": "notes.txt", "allowed": True,
@@ -27,7 +29,9 @@ class AgentPipelineTests(unittest.TestCase):
     def test_forbidden_proposal_is_not_rewritten_or_executed(self):
         with patch("agent_guard.executor.simulated_read") as reader:
             result = execute_model_response('{"action":"write","path":"notes.txt"}')
-        self.assertEqual(result, (False, "Action is not permitted."))
+        self.assertEqual(result, {
+            "decision": "deny", "executed": False, "message": "Action is not permitted.",
+        })
         reader.assert_not_called()
         self.assertEqual(len(audit_log), 1)
         self.assertEqual(audit_log[0]["action"], "write")
@@ -37,7 +41,9 @@ class AgentPipelineTests(unittest.TestCase):
         with patch("agent_guard.executor.simulated_read") as reader:
             result = execute_model_response("not JSON")
         reader.assert_not_called()
-        self.assertEqual(result, (False, "Malformed request."))
+        self.assertEqual(result, {
+            "decision": "deny", "executed": False, "message": "Malformed request.",
+        })
         self.assertEqual(len(audit_log), 1)
         self.assertIsNone(audit_log[0]["action"])
 
@@ -45,5 +51,7 @@ class AgentPipelineTests(unittest.TestCase):
         with patch("agent_guard.executor.simulated_read") as reader:
             result = execute_model_response('["read", "notes.txt"]')
         reader.assert_not_called()
-        self.assertEqual(result, (False, "Malformed request."))
+        self.assertEqual(result, {
+            "decision": "deny", "executed": False, "message": "Malformed request.",
+        })
         self.assertEqual(len(audit_log), 1)

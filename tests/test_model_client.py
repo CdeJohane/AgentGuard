@@ -115,7 +115,9 @@ class StreamTests(unittest.TestCase):
         try:
             text = read_completed_text(BytesIO(event_bytes(event)))
             with patch("agent_guard.executor.simulated_read", return_value="Pretend notes") as reader:
-                self.assertEqual(execute_model_response(text), (True, "Pretend notes"))
+                self.assertEqual(execute_model_response(text), {
+                    "decision": "allow", "executed": True, "message": "Pretend notes",
+                })
             reader.assert_called_once_with("notes.txt")
             self.assertEqual(len(audit_log), 1)
         finally:
@@ -128,7 +130,9 @@ class StreamTests(unittest.TestCase):
         try:
             text = read_completed_text(BytesIO(event_bytes(event)))
             with patch("agent_guard.executor.simulated_read") as reader:
-                self.assertEqual(execute_model_response(text), (False, "Malformed request."))
+                self.assertEqual(execute_model_response(text), {
+                    "decision": "deny", "executed": False, "message": "Malformed request.",
+                })
             reader.assert_not_called()
             self.assertEqual(len(audit_log), 1)
         finally:
@@ -369,7 +373,9 @@ class TransportTests(unittest.TestCase):
         try:
             text = self.transport.propose("fake-access", {})
             with patch("agent_guard.executor.simulated_read", return_value="Pretend notes") as reader:
-                self.assertEqual(execute_model_response(text), (True, "Pretend notes"))
+                self.assertEqual(execute_model_response(text), {
+                    "decision": "allow", "executed": True, "message": "Pretend notes",
+                })
             reader.assert_called_once_with("notes.txt")
             self.assertEqual(len(audit_log), 1)
         finally:

@@ -81,7 +81,13 @@ You completed `execute_model_response(text)` in `agent_guard/agent.py`:
 
 Your implementation stores the parser's result in `parsed` and returns
 `execute_request(parsed)`. It preserves the original proposal and returns the
-executor's `(bool, str)` tuple, without duplicating permission rules or audit calls.
+executor's result, without duplicating permission rules or audit calls. At the
+original checkpoint that result was a `(bool, str)` tuple; the current
+[structured-result exercise](walkthrough.md#twelfth-exercise-completed-structured-execution-results)
+changes it to a dictionary with `decision`, `executed`, and `message` keys.
+The pipeline still passes it through unchanged. The completed refactor passes
+the full 168-test suite, including fake-service model and orchestration checks;
+no new live model request was made for this return-format change.
 With the authentication environment activated:
 
 ```powershell

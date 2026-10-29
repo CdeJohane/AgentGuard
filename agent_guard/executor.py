@@ -1,4 +1,4 @@
-"""A guarded execution exercise. No real files are accessed."""
+"""Guarded simulated execution with separate decision and execution fields."""
 
 from .audit import record_decision
 from .guard import check_request
@@ -16,8 +16,8 @@ def simulated_read(path: str) -> str:
     return f"Simulated contents of {path}"
 
 
-def execute_request(request: object) -> tuple[bool, str]:
-    """Return (True, contents) on success or (False, reason) on denial.
+def execute_request(request: object) -> dict[str, bool | str]:
+    """Return a dictionary containing decision, executed, and message.
 
     Record the guard's permission decision before running an allowed operation.
     Denied requests never reach the simulated reader.
@@ -30,5 +30,14 @@ def execute_request(request: object) -> tuple[bool, str]:
             msg = simulated_read(request["path"])
         except OSError:
             raise OperationError() from None  # Hide the original exception context.
-    return decision, msg
+        return {
+            "decision": "allow",
+            "executed": True,
+            "message": msg,
+        }
+    return {
+        "decision": "deny",
+        "executed": False,
+        "message": msg,
+    }
 

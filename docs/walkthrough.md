@@ -4,6 +4,10 @@ Completed pair-programming exercises for the first working prototype. Code paths
 
 Start with the [project README](../README.md) for setup and the demo. Personal progress is recorded in the [learning log](learning_log.txt).
 
+These exercises record the evolving implementation. The executor's former tuple
+result in earlier exercises was replaced by the dictionary in the
+[completed twelfth exercise](#twelfth-exercise-completed-structured-execution-results).
+
 ## First exercise (completed): permissions
 
 The initial exercise was to initialize Git and implement a permission check:
@@ -422,3 +426,53 @@ calling the executor or reader. The initial scaffold's errors and the subsequent
 list-shape bug are resolved. The assistant preserved the learner's working loop,
 tidied spacing, removed exercise labels, and updated these notes. This completes
 the agreed policy-flow demonstration and is ready for commit/push.
+
+## Twelfth exercise (completed): structured execution results
+
+Completed on 29 October 2026 after the learner committed the policy demonstration
+as `7c04761` and reported pushing it. Before connecting the project policy to
+execution, the learner agreed to separate the policy decision from execution
+in the executor's returned result.
+
+The result is a dictionary with exactly three keys:
+
+| Field | Meaning |
+| --- | --- |
+| `decision` | `"allow"` or `"deny"` for the existing guard in this checkpoint |
+| `executed` | `True` only after the simulated reader returns successfully |
+| `message` | Returned simulated contents on execution, or the permission reason on denial |
+
+The `dict[str, bool | str]` annotation describes string keys and values that
+are either booleans or strings. The three-key result does not change what the
+model can supply. The guard continues returning `(allowed, reason)` internally.
+Only reading exactly notes.txt remains permitted. Project-policy review is a
+separate future checkpoint, not an implemented executor decision yet.
+
+The assistant updated callers in `simulate.py` and `live_demo.py`, the pipeline's
+return annotation, and existing tests for the new result. Callers explicitly
+inspect `executed`; they must not treat a nonempty result dictionary as an
+approval. The learner implemented both returns in `agent_guard/executor.py`:
+
+1. After the reader succeeds, return decision `allow`, executed `True`, and
+   `msg` as the message.
+2. For denied requests, return decision `deny`, executed `False`, and `msg`
+   as the message.
+
+Each dictionary uses the exact keys `decision`, `executed`, and `message`.
+Review confirmed both returns and preserved their logic. The assistant tidied
+dictionary spacing/indentation and removed exercise labels. Permission checking,
+one audit record before the reader, and the narrow OSError-to-OperationError
+handler are preserved. Reader failure still raises the safe exception rather
+than returning success. The audit's allowed/reason fields are unchanged.
+
+```powershell
+python -m unittest tests.test_executor -v
+```
+
+All seven focused executor tests and the full 168-test suite pass with none
+skipped in the project environment. The 19 initial scaffold errors are resolved.
+Both offline demonstrations were run separately: the original retains its one
+execution, three denials, and four audit records; the policy-only demo retains
+ALLOW/REVIEW/DENY/DENY without execution. The optional model orchestration is
+covered by fake-service tests; no new live model request was made.
+Commit/push this checkpoint before the separate policy-to-execution integration.

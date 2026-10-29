@@ -71,7 +71,9 @@ class AuditTests(unittest.TestCase):
         with patch("agent_guard.executor.simulated_read", side_effect=reader_after_logging) as reader:
             result = execute_request({"action": "read", "path": "notes.txt"})
             reader.assert_called_once_with("notes.txt")
-        self.assertEqual(result, (True, "Private file contents"))
+        self.assertEqual(result, {
+            "decision": "allow", "executed": True, "message": "Private file contents",
+        })
         self.assertEqual(audit_log, [expected_record])
 
     def test_denied_requests_are_logged_without_calling_reader(self):
@@ -85,7 +87,9 @@ class AuditTests(unittest.TestCase):
             with patch("agent_guard.executor.simulated_read") as reader:
                 result = execute_request(request)
                 reader.assert_not_called()
-            self.assertEqual(result, (False, reason))
+            self.assertEqual(result, {
+                "decision": "deny", "executed": False, "message": reason,
+            })
             self.assertEqual(audit_log, [{
                 "action": action,
                 "path": path,

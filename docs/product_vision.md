@@ -29,7 +29,8 @@ An AgentGuard-owned chat panel would require a separate product decision.
 - An offline policy-only demonstration connects that evaluator to the explanation
   helper for four sample requests. It prints ALLOW/REVIEW/DENY/DENY without
   executing actions, collecting approvals, or changing the execution audit.
-- A guarded executor, in-memory permission audit, and distinct execution failure.
+- A guarded executor with separate decision/executed/message result fields,
+  an in-memory permission audit, and distinct execution failure.
 - An offline demo and a direct model-proposal demo using ChatGPT plan sign-in.
 - Manually verified live allowed-read, forbidden-file, and forbidden-action cases.
 - The completed Python prototype checkpoint had 134 passing tests. The current
@@ -37,6 +38,9 @@ An AgentGuard-owned chat panel would require a separate product decision.
   checks](interception_proof.md), 11 policy-combination/explanation tests, and six
   project-rule tests plus two policy-demo tests. Eight
   signed-token tests skip when optional authentication packages are absent.
+- The completed structured-result refactor preserves both offline demos and
+  passes the full suite. It prepares a separate policy-to-execution checkpoint;
+  project-policy review is not connected to execution yet.
 - A trusted project hook blocked one shell call at a disposable workspace root
   in local VS Code. A successful control, exact matching receipt digest, absent
   target marker, and unchanged responder source independently support that proof.

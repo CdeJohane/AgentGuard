@@ -668,6 +668,39 @@ Completed exercise: demonstrate the offline policy flow
   and updated the documentation. Today's agreed offline policy-flow scope is done.
 - Next checkpoint: commit/push with message:
   Demonstrate explained project policy decisions offline.
+- Committed the completed policy demonstration as 7c04761 and reported pushing it.
+
+Completed exercise: structured execution results
+
+- Agreed an extra small feature after today's original scope: connect policy
+  decisions to simulated execution, split into a result-format checkpoint and
+  a later policy-integration checkpoint.
+- First replace the executor's boolean/message tuple with a dictionary holding
+  decision, executed, and message. Keep the existing permission rules, safe
+  reader-failure handling, one audit entry, and displayed demo output.
+- The assistant updated the callers, pipeline annotation, and existing test
+  expectations. The two return dictionaries in execute_request() were left
+  for me to implement. The guard still returns its
+  original (allowed, reason) pair, and the audit shape is unchanged.
+- The scaffold suite found 168 tests: 149 pass and 19 dependent tests reach
+  the two expected placeholders. There are no assertion failures, other errors,
+  or skipped tests. Guarded-execution demos cannot complete until I finish them;
+  the separate policy-only demonstration remains available.
+- Project-policy review is not connected to execution yet. No approvals or
+  actual filesystem access have been added.
+- Implemented both returns myself with decision, executed, and message fields.
+  Review confirmed the allowed result reports True only after reader success,
+  and the denied result reports False with the permission reason.
+- The assistant preserved my logic, tidied spacing and indentation, removed
+  exercise labels, and updated the documentation.
+- All seven executor tests and the full 168-test suite pass with none skipped.
+  The 19 initial scaffold errors are resolved. Both offline demos were run and
+  retained their expected output and audit behaviour. Optional model orchestration
+  was checked with fake-service tests, without a new live model request.
+- Next checkpoint: commit/push with message:
+  Separate permission decisions from execution results.
+- After this checkpoint, connect project-policy review to simulated execution
+  as the separate agreed next feature.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES
