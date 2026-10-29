@@ -332,3 +332,49 @@ suite passes all 160 tests with none skipped in the project environment. The
 initial scaffold's four deliberate errors are resolved. No integration with
 actual layer rules, approvals, auditing, or execution has been added. This is
 a passing checkpoint for the learner to commit and push.
+
+## Tenth exercise (completed): evaluate a project request
+
+Completed on 29 October 2026 after clean commit `520018f`, containing the
+completed explanation helper. The agreed next step is a fixed project policy
+for simulated file requests, followed by an offline policy-flow demonstration.
+The global and language/toolchain rules are not implemented by this exercise.
+
+`evaluate_project_request()` in `agent_guard/project_policy.py` returns a new
+dictionary with exactly `layer`, `decision`, and `reason`. The layer is always
+`project`; policy-authored reasons are fixed strings, never request contents.
+
+| Request | Decision | Reason |
+| --- | --- | --- |
+| Malformed structure/types or blank action/path | deny | Malformed request. |
+| Any action other than exactly `read` | deny | Action is not permitted. |
+| Exactly `read` with exactly `notes.txt` | allow | Reading notes.txt is permitted. |
+| Another nonempty read label | review | File requires review. |
+
+The assistant supplied structure/type validation using the learner's existing
+`is_valid_request()`, rejection of blank strings, a fresh result dictionary,
+and six tests. Validation comes first; malformed requests must not reach the
+rule branches. Extra request fields cannot supply the layer, decision, or reason.
+
+The learner implemented the rule branches, setting `result["decision"]` and
+`result["reason"]`, then returning `result`. Review confirmed the action check
+comes before the path, so writing notes is denied despite its matching filename.
+The second action comparison is redundant but correct; the assistant preserved
+the learner's logic, fixing spacing and removing exercise labels only.
+The request is not modified and its values are not copied into reasons.
+
+Paths are literal simulated labels, not resolved filesystem paths. For example,
+`./notes.txt` requires review rather than being normalized into an allowed read.
+`secrets.txt` also requires review in this isolated layer; no global secret-file
+rule is implemented here. Review never authorizes execution. The existing guard,
+executor, audit, and demos retain their current behaviour.
+
+```powershell
+python -m unittest tests.test_project_policy -v
+```
+
+All six project-policy tests pass. They cover allow/review/deny, action priority,
+exact path labels, malformed and blank inputs, untrusted permission claims, and
+unchanged request data. The full suite passes all 166 tests with none skipped in
+the project environment. The initial scaffold's exercise errors are resolved.
+Commit/push this passing checkpoint before adding the planned demonstration.

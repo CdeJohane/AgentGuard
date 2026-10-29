@@ -609,6 +609,36 @@ Completed exercise: explaining policy decisions
   actual rule evaluation and enforcement integration remain future work.
 - Next checkpoint: commit/push with message:
   Explain policy decisions with contributing layer reasons.
+- Committed the explanation helper as 520018f and reported pushing it.
+
+Completed exercise: evaluate a project request
+
+- Agreed to one fixed project policy first, then an offline demonstration of
+  request -> evaluation -> explanation, with a passing commit/push between steps.
+- Expected behaviour: malformed or blank requests and unsupported actions deny;
+  exactly reading notes.txt allows; other nonempty read labels require review.
+  Review keeps the action blocked. Paths remain simulated labels.
+- The assistant prepared agent_guard/project_policy.py with validation and
+  six tests. The action/path branches that set the decision and reason were
+  left for me to implement.
+- Reused my existing request-structure validation. The result is a fresh
+  project-layer record with fixed reasons; model-supplied permission claims,
+  contents, and other extra fields do not become policy output.
+- The scaffold check ran 166 tests with none skipped. All prior 160 plus the
+  new malformed-input test pass. Five exercise methods intentionally encounter
+  NotImplementedError (14 errors across cases), with no other failures.
+- No global or language rules, real filesystem access, approval prompts, or
+  executor/VS Code integration have been added. The original demo is unchanged.
+- Implemented the branches myself: deny unsupported actions first, allow exactly
+  reading notes.txt, otherwise require review, then return the project record.
+- Review confirmed the action-before-path order and fixed policy reasons.
+  The second action comparison is redundant but correct. The assistant kept my
+  logic and only tidied spacing and removed the unfinished exercise labels.
+- All six focused tests and the full 166-test suite pass with none skipped.
+  The scaffold's deliberate errors are resolved and documentation is updated.
+- Next checkpoint: commit/push with message:
+  Evaluate simulated requests with fixed project policy.
+- After that checkpoint, prepare the agreed offline policy-flow demonstration.
 
 --------------------------------------------------------------------------
 TEMPLATE FOR FUTURE ENTRIES

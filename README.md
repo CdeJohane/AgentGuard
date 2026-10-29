@@ -152,7 +152,7 @@ and callback-state validation. Callback-listener tests send fake responses
 over local loopback HTTP, checking validation, cancellation, one-time use,
 deadlines, and suppressed request logs. No tests launch a browser or call OpenAI.
 
-In the authentication virtual environment, **all 160 tests pass**, with none
+In the authentication virtual environment, **all 166 tests pass**, with none
 skipped. The completed hook response builder, disposable fixture, and
 installed-version observations are in the [interception investigation](docs/interception_proof.md).
 The control marker write succeeded. After trusting the project hook, the blocked
@@ -168,6 +168,12 @@ for empty input, and explain the contributing layers and their reasons. All 11
 policy tests pass; these helpers are not yet connected to the executor or a
 configurable policy. See the
 [completed explanation exercise](docs/walkthrough.md#ninth-exercise-completed-explain-policy-decisions).
+A separate fixed project-policy evaluator produces a layer record from a
+simulated request: read notes.txt allows, other valid reads require review, and
+unsupported actions or malformed requests deny. Its six tests pass. It is not
+connected to execution or approval prompts; the original demo retains its
+existing rules. See the
+[project-rule exercise](docs/walkthrough.md#tenth-exercise-completed-evaluate-a-project-request).
 The completed pipeline tests verify allowed, forbidden, malformed,
 and structurally invalid proposals. Eight signed-token tests are skipped if the optional
 authentication dependency is absent. The signed-token tests use locally generated

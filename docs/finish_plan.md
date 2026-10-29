@@ -10,7 +10,7 @@ Planning snapshot: 29 October 2026. Dates and proposed feature topics are subjec
 The first working milestone had twenty-six passing tests. The completed Python
 prototype had 134 passing tests and successful live model proposals through the guard.
 The hook responder, receipt and native-evidence checks, and policy helpers
-bring the suite to 160 passing tests. The
+plus project-rule evaluation bring the suite to 166 passing tests. The
 remaining week is for proving integration toward the newly clarified VS Code
 product direction. The existing Python prototype remains the verified baseline.
 The feature topics below are proposed; their behaviour will be discussed before
@@ -21,7 +21,7 @@ implementation, with the same small-step pair-programming approach.
 | Monday, 26 October | Completed the model connection and three live permission checks, with 129 passing offline tests. |
 | Tuesday, 27 October | No session; the planned model connection had already been completed on Monday. |
 | Wednesday, 28 October | Completed operation-failure handling and setup review. Evening: completed/committed the responder; 144 tests pass. Verified control and one trusted project-hook denial in local VS Code with a matching receipt and no blocked marker. |
-| Thursday, 29 October | Completed isolated policy combination and explanations; all 160 tests pass. Native CLI write restriction is verified separately; native enforcement in the VS Code workflow remains unresolved. |
+| Thursday, 29 October | Completed isolated policy combination, explanations, and fixed project-rule evaluation; all 166 tests pass. Offline policy-flow demonstration is next. Native enforcement in the VS Code workflow remains unresolved. |
 | Friday, 30 October | Review the verified integration slice and its limits. Address concrete gaps and prepare an accurate progress-post draft. |
 | Saturday morning, 31 October | Demonstrate the verified scope, run applicable checks, and record achieved results and unresolved integration limits. |
 
@@ -135,6 +135,20 @@ and formatting of the contributing layer labels and policy-authored reasons.
 All reasons matching the final decision appear in input order. Review preserved
 the learner's direct string-building logic. The helper remains separate from
 real rules, approval prompts, auditing, and execution. All 11 policy tests and
-the full 160-test suite pass, with none skipped. Commit/push this checkpoint
-before agreeing the next feature. See the
+the full 160-test suite pass, with none skipped. The learner committed it as
+`520018f` and reported pushing it. See the
 [exercise review](walkthrough.md#ninth-exercise-completed-explain-policy-decisions).
+
+Remaining Thursday scope agreed with the learner: first evaluate a simulated
+request with one fixed project policy, then demonstrate request -> evaluation
+-> explained decision offline. Review, update documentation, and commit/push
+at each passing checkpoint. Global/language rules, configurable policy, approval
+UI, and VS Code/native-enforcement integration remain later work.
+
+The project-policy exercise is completed. The assistant supplied validation
+and six tests; the learner implemented the action/path branches. Malformed or blank
+requests and unsupported actions deny; read notes.txt allows; another nonempty
+read label requires review. Review does not permit execution. All six focused
+tests and the full 166-test suite pass, with none skipped. Commit/push this
+checkpoint before the offline policy-flow demonstration. See the
+[exercise review](walkthrough.md#tenth-exercise-completed-evaluate-a-project-request).
